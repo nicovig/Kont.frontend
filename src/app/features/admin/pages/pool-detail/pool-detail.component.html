@@ -1,0 +1,44 @@
+<div class="pool-detail-container">
+  <div class="header">
+    <button class="btn btn-back" routerLink="/admin/pools">
+      ← Retour aux pools
+    </button>
+    <h1>{{ pool?.name }}</h1>
+    <button class="btn btn-primary" (click)="editPool()">
+      Modifier
+    </button>
+  </div>
+  
+  <div class="pool-info" *ngIf="pool">
+    <div class="info-card">
+      <h3>Informations générales</h3>
+      <p><strong>Description:</strong> {{ pool.description }}</p>
+      <p><strong>Participants:</strong> {{ pool.participants }}</p>
+      <p><strong>Activités:</strong> {{ pool.activities }}</p>
+      <p><strong>Statut:</strong> {{ pool.status }}</p>
+    </div>
+    
+    <div class="info-card">
+      <h3>Participants</h3>
+      <div class="participants-list">
+        <div class="participant" *ngFor="let participant of pool.participantsList">
+          <span>{{ participant.name }}</span>
+          <span class="score">{{ participant.score }} pts</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="info-card">
+      <h3>Activités</h3>
+      <div class="activities-list">
+        <div class="activity" *ngFor="let activity of pool.activitiesList">
+          <span>{{ activity.name }}</span>
+          <span class="date">{{ activity.date }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

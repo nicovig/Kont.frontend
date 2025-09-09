@@ -1,0 +1,90 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">Rejoindre l'événement</h1>
+      <p class="text-gray-600">{{ poolInfo().name }}</p>
+    </div>
+
+    <form (ngSubmit)="joinPool()" class="space-y-6">
+      <div>
+        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+        <input type="text" 
+               id="firstName"
+               [ngModel]="formData().firstName"
+               (ngModelChange)="setFirstName($event)"
+               name="firstName"
+               required
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div>
+        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+        <input type="text" 
+               id="lastName"
+               [ngModel]="formData().lastName"
+               (ngModelChange)="setLastName($event)"
+               name="lastName"
+               required
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+        <input type="email" 
+               id="email"
+               [ngModel]="formData().email"
+               (ngModelChange)="setEmail($event)"
+               name="email"
+               required
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Nom d'utilisateur</label>
+        <input type="text" 
+               id="username"
+               [ngModel]="formData().username"
+               (ngModelChange)="setUsername($event)"
+               name="username"
+               required
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div>
+        <label for="pin" class="block text-sm font-medium text-gray-700 mb-2">Code PIN (4 chiffres)</label>
+        <input type="password" 
+               id="pin"
+               [ngModel]="formData().pin"
+               (ngModelChange)="setPin($event)"
+               name="pin"
+               maxlength="4"
+               pattern="[0-9]{4}"
+               required
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <button type="submit" 
+              [disabled]="!isFormValid()"
+              class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+        Rejoindre l'événement
+      </button>
+    </form>
+
+    <div class="mt-6 text-center">
+      <p class="text-xs text-gray-500">
+        Vous avez déjà un compte ? 
+        <button (click)="showReconnectModal()" class="text-blue-600 hover:text-blue-800 font-medium">
+          Se reconnecter
+        </button>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+

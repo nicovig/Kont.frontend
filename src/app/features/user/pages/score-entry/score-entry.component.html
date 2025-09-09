@@ -1,0 +1,104 @@
+<div class="min-h-screen bg-gray-50">
+  <nav class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <button (click)="goBack()" class="text-blue-600 hover:text-blue-800 mr-4">← Retour</button>
+          <h1 class="text-xl font-bold text-gray-900">Saisie de Score</h1>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-2xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+      <div class="bg-white shadow rounded-lg p-6">
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ activityInfo().name }}</h2>
+          <p class="text-gray-600">{{ activityInfo().description }}</p>
+        </div>
+
+        <form (ngSubmit)="submitScore()" class="space-y-6">
+          <div>
+            <label for="score" class="block text-sm font-medium text-gray-700 mb-2">
+              {{ getScoreLabel() }}
+            </label>
+            <input type="number" 
+                   id="score"
+                   [ngModel]="scoreData().score"
+                   (ngModelChange)="setScore($event)"
+                   name="score"
+                   [min]="getMinScore()"
+                   [max]="getMaxScore()"
+                   required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <p class="mt-1 text-xs text-gray-500">{{ getScoreHelp() }}</p>
+          </div>
+
+          @if (activityInfo().scoringType === 'time_with_bonus') {
+            <div>
+              <label for="bonus" class="block text-sm font-medium text-gray-700 mb-2">Bonus (optionnel)</label>
+              <input type="number" 
+                     id="bonus"
+                     [ngModel]="scoreData().bonus"
+                     (ngModelChange)="setBonus($event)"
+                     name="bonus"
+                     min="0"
+                     class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <p class="mt-1 text-xs text-gray-500">Points bonus pour objets cachés, etc.</p>
+            </div>
+          }
+
+          <div>
+            <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (optionnel)</label>
+            <textarea id="notes"
+                      [ngModel]="scoreData().notes"
+                      (ngModelChange)="setNotes($event)"
+                      name="notes"
+                      rows="3"
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Commentaires sur votre performance..."></textarea>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">Score estimé</h3>
+                <div class="mt-2 text-sm text-blue-700">
+                  <p>Votre score estimé: <span class="font-bold">{{ getEstimatedScore() }}</span></p>
+                  <p>Pourcentage estimé: <span class="font-bold">{{ getEstimatedPercentage() }}%</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex space-x-4">
+            <button type="button" 
+                    (click)="goBack()"
+                    class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-400 transition-colors">
+              Annuler
+            </button>
+            <button type="submit" 
+                    [disabled]="!isScoreValid()"
+                    class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+              Enregistrer le Score
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
