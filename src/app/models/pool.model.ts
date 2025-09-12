@@ -1,47 +1,26 @@
-import { Activity } from './activity.model';
+import { Event } from './event.model';
+import { GameSession } from './game-session.model';
+import { PlayerRegistration } from './player-registration.model';
 
 export interface Pool {
   id: string;
   name: string;
   description?: string;
   qrCode: string;
-  establishmentId: string;
-  adminId: string;
-  status: PoolStatus;
-  maxPlayers: number;
-  currentPlayers: number;
-  activities: Activity[];
-  groups: Group[];
-  // Informations sur l'évènement
-  eventInfo: {
-    companyName: string;
-    eventDate: Date;
-    expectedDuration: number; // en minutes
-    location?: string;
-  };
-  // Référents assignés
-  referents: string[]; // userIds
+  event: Event;
+  playerRegistrations: PlayerRegistration[];
+  gameSessions: GameSession[];
+  isActive: boolean;
+  isAllPlayersPresent: boolean;
   createdAt: Date;
   startedAt?: Date;
   endedAt?: Date;
+  status: PoolStatus;
 }
 
 export enum PoolStatus {
-  CREATED = 'created',
-  WAITING_PLAYERS = 'waiting_players',
-  READY = 'ready',
-  IN_PROGRESS = 'in_progress',
-  FINISHED = 'finished'
+  Pending = 'Pending',
+  Active = 'Active',
+  Completed = 'Completed',
+  Cancelled = 'Cancelled'
 }
-
-export interface Group {
-  id: string;
-  poolId: string;
-  name: string;
-  players: string[];
-  activityId: string;
-  currentRound: number;
-  maxRounds: number;
-  isActive: boolean;
-}
-
