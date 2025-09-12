@@ -1,126 +1,78 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Pool, PoolStatus } from '../../../models';
+import { AdminState } from '../../store/admin.state';
+import * as AdminActions from '../../store/admin.actions';
+import * as AdminSelectors from '../../store/admin.selectors';
 
 @Component({
   selector: 'app-pool-detail',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './pool-detail.component.html',
-  styles: [`
-    .pool-detail-container {
-      padding: 2rem;
-    }
-    
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-    
-    .btn {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-    }
-    
-    .btn-back {
-      background: #6c757d;
-      color: white;
-    }
-    
-    .btn-primary {
-      background: #007bff;
-      color: white;
-    }
-    
-    .pool-info {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-    }
-    
-    .info-card {
-      background: white;
-      border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      border: 1px solid #e0e0e0;
-    }
-    
-    .info-card h3 {
-      margin: 0 0 1rem 0;
-      color: #333;
-    }
-    
-    .participants-list, .activities-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    
-    .participant, .activity {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem;
-      background: #f8f9fa;
-      border-radius: 4px;
-    }
-    
-    .score {
-      font-weight: bold;
-      color: #007bff;
-    }
-    
-    .date {
-      color: #666;
-      font-size: 0.9rem;
-    }
-  `]
+  styleUrls: ['./pool-detail.component.css']
 })
-export class PoolDetailComponent implements OnInit {
-  pool: any = null;
+export class PoolDetailComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
 
-  constructor(private route: ActivatedRoute) {}
+  // Selectors
+  selectedPool$: Observable<Pool | null>;
+  poolStats$: Observable<any>;
+  poolsLoading$: Observable<boolean>;
 
-  ngOnInit() {
-    const poolId = this.route.snapshot.paramMap.get('id');
-    // TODO: Charger les données du pool depuis l'API
-    this.loadPool(poolId);
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly store: Store<{ admin: AdminState }>
+  ) {
+    this.selectedPool$ = this.store.select(AdminSelectors.selectSelectedPool);
+    this.poolStats$ = this.store.select(AdminSelectors.selectPoolStats);
+    this.poolsLoading$ = this.store.select(AdminSelectors.selectPoolsLoading);
   }
 
-  loadPool(poolId: string | null) {
+  ngOnInit(): void {
+    const poolId = this.route.snapshot.paramMap.get('id');
     if (poolId) {
-      // Données mockées - à remplacer par un appel API
-      this.pool = {
-        id: poolId,
-        name: 'Pool Tennis 2024',
-        description: 'Tournoi de tennis annuel',
-        participants: 24,
-        activities: 8,
-        status: 'Actif',
-        participantsList: [
-          { name: 'Jean Dupont', score: 150 },
-          { name: 'Marie Martin', score: 140 },
-          { name: 'Pierre Durand', score: 135 }
-        ],
-        activitiesList: [
-          { name: 'Match 1', date: '2024-01-15' },
-          { name: 'Match 2', date: '2024-01-22' },
-          { name: 'Match 3', date: '2024-01-29' }
-        ]
-      };
+      this.store.dispatch(AdminActions.loadPoolStats({ poolId }));
     }
   }
 
-  editPool() {
-    console.log('Edit pool:', this.pool?.id);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  editPool(): void {
+    console.log('Edit pool');
     // TODO: Implémenter la logique d'édition
+  }
+
+  validateAllPlayersPresent(): void {
+    this.selectedPool$.pipe(takeUntil(this.destroy$)).subscribe(pool => {
+      if (pool) {
+        this.store.dispatch(AdminActions.validateAllPlayersPresent({ poolId: pool.id }));
+      }
+    });
+  }
+
+  endPool(): void {
+    this.selectedPool$.pipe(takeUntil(this.destroy$)).subscribe(pool => {
+      if (pool && confirm('Êtes-vous sûr de vouloir terminer cette pool ?')) {
+        this.store.dispatch(AdminActions.endPool({ poolId: pool.id }));
+      }
+    });
+  }
+
+  getStatusText(status: PoolStatus): string {
+    const statusTexts: { [key in PoolStatus]: string } = {
+      [PoolStatus.Pending]: 'En attente',
+      [PoolStatus.Active]: 'Active',
+      [PoolStatus.Completed]: 'Terminée',
+      [PoolStatus.Cancelled]: 'Annulée'
+    };
+    return statusTexts[status] || status;
   }
 }

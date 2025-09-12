@@ -1,44 +1,80 @@
 <div class="pool-detail-container">
   <div class="header">
-    <button class="btn btn-back" routerLink="/admin/pools">
-      ← Retour aux pools
-    </button>
-    <h1>{{ pool?.name }}</h1>
-    <button class="btn btn-primary" (click)="editPool()">
-      Modifier
-    </button>
+    <h1>Détails de la Pool</h1>
+    <div class="header-actions">
+      <button class="btn btn-back" routerLink="/admin/pools">
+        Retour
+      </button>
+      <button class="btn btn-primary" (click)="editPool()">
+        Modifier
+      </button>
+    </div>
   </div>
-  
-  <div class="pool-info" *ngIf="pool">
+
+  <div class="pool-info" *ngIf="selectedPool$ | async as pool">
     <div class="info-card">
       <h3>Informations générales</h3>
-      <p><strong>Description:</strong> {{ pool.description }}</p>
-      <p><strong>Participants:</strong> {{ pool.participants }}</p>
-      <p><strong>Activités:</strong> {{ pool.activities }}</p>
-      <p><strong>Statut:</strong> {{ pool.status }}</p>
-    </div>
-    
-    <div class="info-card">
-      <h3>Participants</h3>
-      <div class="participants-list">
-        <div class="participant" *ngFor="let participant of pool.participantsList">
-          <span>{{ participant.name }}</span>
-          <span class="score">{{ participant.score }} pts</span>
-        </div>
+      <div class="info-item">
+        <label>Nom :</label>
+        <span>{{ pool.name }}</span>
+      </div>
+      <div class="info-item" *ngIf="pool.description">
+        <label>Description :</label>
+        <span>{{ pool.description }}</span>
+      </div>
+      <div class="info-item">
+        <label>Statut :</label>
+        <span class="status" [class]="'status-' + pool.status.toLowerCase()">
+          {{ getStatusText(pool.status) }}
+        </span>
+      </div>
+      <div class="info-item">
+        <label>QR Code :</label>
+        <span class="qr-code">{{ pool.qrCode }}</span>
+      </div>
+      <div class="info-item">
+        <label>Créée le :</label>
+        <span>{{ pool.createdAt | date:'short' }}</span>
       </div>
     </div>
-    
+
     <div class="info-card">
-      <h3>Activités</h3>
-      <div class="activities-list">
-        <div class="activity" *ngFor="let activity of pool.activitiesList">
-          <span>{{ activity.name }}</span>
-          <span class="date">{{ activity.date }}</span>
+      <h3>Statistiques</h3>
+      <div class="stats-grid" *ngIf="poolStats$ | async as stats">
+        <div class="stat-item">
+          <div class="stat-value">{{ stats?.totalPlayers || pool.playerRegistrations.length }}</div>
+          <div class="stat-label">Joueurs inscrits</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ stats?.checkedInPlayers || 0 }}</div>
+          <div class="stat-label">Joueurs présents</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ stats?.activeSessions || pool.gameSessions.length }}</div>
+          <div class="stat-label">Sessions actives</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ stats?.totalActivities || 0 }}</div>
+          <div class="stat-label">Activités</div>
         </div>
       </div>
     </div>
   </div>
+
+  <div class="pool-actions">
+    <button class="btn btn-success" 
+            (click)="validateAllPlayersPresent()"
+            *ngIf="(selectedPool$ | async)?.status === 'Pending'">
+      Valider tous les joueurs présents
+    </button>
+    <button class="btn btn-warning" 
+            (click)="endPool()"
+            *ngIf="(selectedPool$ | async)?.status === 'Active'">
+      Terminer la pool
+    </button>
+  </div>
+
+  <div class="loading-overlay" *ngIf="poolsLoading$ | async">
+    <div class="spinner"></div>
+  </div>
 </div>
-
-
-

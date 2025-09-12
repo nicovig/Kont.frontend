@@ -1,68 +1,57 @@
-<div class="p-8">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">Gestion des Activités</h1>
-    <button (click)="createActivity()" 
-            class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+<div class="activities-container">
+  <div class="activities-header">
+    <h1>Gestion des Activités</h1>
+    <button class="btn btn-primary" (click)="createActivity()">
       Créer une Activité
     </button>
   </div>
-  
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @for (activity of activities; track activity.id) {
-      <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-        <div class="flex justify-between items-start mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">{{ activity.name }}</h3>
-          <span class="px-2 py-1 rounded-full text-xs font-bold uppercase"
-                [ngClass]="{
-                  'bg-green-100 text-green-800': activity.isActive,
-                  'bg-gray-100 text-gray-800': !activity.isActive
-                }">
-            {{ activity.isActive ? 'Active' : 'Inactive' }}
-          </span>
-        </div>
+
+  <div class="activities-grid" *ngIf="activities$ | async as activities">
+    <div class="activity-card" *ngFor="let activity of activities">
+      <div class="activity-header">
+        <h3>{{ activity.name }}</h3>
+        <span class="activity-status">Active</span>
+      </div>
+      
+      <div class="activity-content">
+        <p class="activity-description" *ngIf="activity.description">{{ activity.description }}</p>
         
-        <p class="text-gray-600 mb-4">{{ activity.description }}</p>
-        
-        <div class="space-y-2 mb-4 text-sm">
-          <div class="flex justify-between">
-            <span class="text-gray-500">Type de scoring:</span>
-            <span class="font-medium">{{ activity.scoringType }}</span>
+        <div class="activity-stats">
+          <div class="stat">
+            <span class="stat-label">Métriques :</span>
+            <span class="stat-value">{{ activity.scoringMetrics.length }}</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Score max:</span>
-            <span class="font-medium">{{ activity.maxScore }}</span>
-          </div>
-          @if (activity.timeLimit) {
-            <div class="flex justify-between">
-              <span class="text-gray-500">Durée limite:</span>
-              <span class="font-medium">{{ activity.timeLimit }} min</span>
-            </div>
-          }
-          <div class="flex justify-between">
-            <span class="text-gray-500">Points par unité:</span>
-            <span class="font-medium">{{ activity.scoringConfig.pointsPerUnit }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Multiplicateur bonus:</span>
-            <span class="font-medium">{{ activity.scoringConfig.bonusMultiplier }}x</span>
+          <div class="stat">
+            <span class="stat-label">Créée le :</span>
+            <span class="stat-value">{{ activity.createdAt | date:'short' }}</span>
           </div>
         </div>
-        
-        <div class="flex gap-2">
-          <button (click)="viewActivity(activity.id)" 
-                  class="flex-1 bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
-            Voir
+
+        <div class="activity-actions">
+          <button class="btn btn-sm btn-outline" (click)="viewActivity(activity.id)">
+            Voir détails
           </button>
-          <button (click)="editActivity(activity.id)" 
-                  class="flex-1 bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700">
+          <button class="btn btn-sm btn-secondary" (click)="editActivity(activity.id)">
             Modifier
           </button>
-          <button (click)="deleteActivity(activity.id)" 
-                  class="flex-1 bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700">
+          <button class="btn btn-sm btn-danger" (click)="deleteActivity(activity.id)">
             Supprimer
           </button>
         </div>
       </div>
-    }
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="(activities$ | async)?.length === 0">
+    <div class="empty-icon">🎯</div>
+    <h3>Aucune activité trouvée</h3>
+    <p>Créez votre première activité pour commencer à organiser des événements.</p>
+    <button class="btn btn-primary" (click)="createActivity()">
+      Créer une Activité
+    </button>
+  </div>
+
+  <div class="loading-overlay" *ngIf="activitiesLoading$ | async">
+    <div class="spinner"></div>
   </div>
 </div>

@@ -1,0 +1,235 @@
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { AdminState } from './admin.state';
+
+export const selectAdminState = createFeatureSelector<AdminState>('admin');
+
+// Auth Selectors
+export const selectCurrentAdmin = createSelector(
+  selectAdminState,
+  (state) => state.currentAdmin
+);
+
+export const selectIsAuthenticated = createSelector(
+  selectAdminState,
+  (state) => state.isAuthenticated
+);
+
+export const selectAuthLoading = createSelector(
+  selectAdminState,
+  (state) => state.authLoading
+);
+
+export const selectAuthError = createSelector(
+  selectAdminState,
+  (state) => state.authError
+);
+
+// Sites Selectors
+export const selectSites = createSelector(
+  selectAdminState,
+  (state) => state.sites
+);
+
+export const selectSitesLoading = createSelector(
+  selectAdminState,
+  (state) => state.sitesLoading
+);
+
+export const selectSitesError = createSelector(
+  selectAdminState,
+  (state) => state.sitesError
+);
+
+// Activities Selectors
+export const selectActivities = createSelector(
+  selectAdminState,
+  (state) => state.activities
+);
+
+export const selectActivitiesLoading = createSelector(
+  selectAdminState,
+  (state) => state.activitiesLoading
+);
+
+export const selectActivitiesError = createSelector(
+  selectAdminState,
+  (state) => state.activitiesError
+);
+
+export const selectSelectedActivity = createSelector(
+  selectAdminState,
+  (state) => state.selectedActivity
+);
+
+export const selectActivitiesBySite = createSelector(
+  selectActivities,
+  (activities, siteId: string) => activities.filter(a => a.site === siteId)
+);
+
+// Events Selectors
+export const selectEvents = createSelector(
+  selectAdminState,
+  (state) => state.events
+);
+
+export const selectEventsLoading = createSelector(
+  selectAdminState,
+  (state) => state.eventsLoading
+);
+
+export const selectEventsError = createSelector(
+  selectAdminState,
+  (state) => state.eventsError
+);
+
+export const selectSelectedEvent = createSelector(
+  selectAdminState,
+  (state) => state.selectedEvent
+);
+
+export const selectEventsBySite = createSelector(
+  selectEvents,
+  (events, siteId: string) => events.filter(e => e.site === siteId)
+);
+
+// Pools Selectors
+export const selectPools = createSelector(
+  selectAdminState,
+  (state) => state.pools
+);
+
+export const selectPoolsLoading = createSelector(
+  selectAdminState,
+  (state) => state.poolsLoading
+);
+
+export const selectPoolsError = createSelector(
+  selectAdminState,
+  (state) => state.poolsError
+);
+
+export const selectSelectedPool = createSelector(
+  selectAdminState,
+  (state) => state.selectedPool
+);
+
+export const selectPoolStats = createSelector(
+  selectAdminState,
+  (state) => state.poolStats
+);
+
+export const selectPoolsByEvent = createSelector(
+  selectPools,
+  (pools, eventId: string) => pools.filter(p => p.event === eventId)
+);
+
+export const selectActivePools = createSelector(
+  selectPools,
+  (pools) => pools.filter(p => p.status === 'Active')
+);
+
+export const selectPendingPools = createSelector(
+  selectPools,
+  (pools) => pools.filter(p => p.status === 'Pending')
+);
+
+export const selectCompletedPools = createSelector(
+  selectPools,
+  (pools) => pools.filter(p => p.status === 'Completed')
+);
+
+// Dashboard Selectors
+export const selectDashboardStats = createSelector(
+  selectAdminState,
+  (state) => state.dashboardStats
+);
+
+export const selectDashboardLoading = createSelector(
+  selectAdminState,
+  (state) => state.dashboardLoading
+);
+
+export const selectDashboardError = createSelector(
+  selectAdminState,
+  (state) => state.dashboardError
+);
+
+export const selectRecentActivity = createSelector(
+  selectDashboardStats,
+  (stats) => stats?.recentActivity || []
+);
+
+// Real-time Selectors
+export const selectRealTimeEnabled = createSelector(
+  selectAdminState,
+  (state) => state.realTimeEnabled
+);
+
+export const selectLastUpdate = createSelector(
+  selectAdminState,
+  (state) => state.lastUpdate
+);
+
+// Combined Selectors
+export const selectAdminOverview = createSelector(
+  selectCurrentAdmin,
+  selectSites,
+  selectActivities,
+  selectPools,
+  selectDashboardStats,
+  (admin, sites, activities, pools, dashboardStats) => ({
+    admin,
+    sitesCount: sites.length,
+    activitiesCount: activities.length,
+    poolsCount: pools.length,
+    activePoolsCount: pools.filter(p => p.status === 'Active').length,
+    dashboardStats
+  })
+);
+
+export const selectPoolOverview = createSelector(
+  selectSelectedPool,
+  selectPoolStats,
+  selectActivities,
+  (pool, stats, activities) => ({
+    pool,
+    stats,
+    poolActivities: pool ? activities.filter(a => pool.gameSessions.some(gs => gs === a.id)) : []
+  })
+);
+
+// Error Selectors
+export const selectAllErrors = createSelector(
+  selectAuthError,
+  selectSitesError,
+  selectActivitiesError,
+  selectEventsError,
+  selectPoolsError,
+  selectDashboardError,
+  (authError, sitesError, activitiesError, eventsError, poolsError, dashboardError) => ({
+    authError,
+    sitesError,
+    activitiesError,
+    eventsError,
+    poolsError,
+    dashboardError
+  })
+);
+
+// Loading Selectors
+export const selectAllLoading = createSelector(
+  selectAuthLoading,
+  selectSitesLoading,
+  selectActivitiesLoading,
+  selectEventsLoading,
+  selectPoolsLoading,
+  selectDashboardLoading,
+  (authLoading, sitesLoading, activitiesLoading, eventsLoading, poolsLoading, dashboardLoading) => ({
+    authLoading,
+    sitesLoading,
+    activitiesLoading,
+    eventsLoading,
+    poolsLoading,
+    dashboardLoading
+  })
+);

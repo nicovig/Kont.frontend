@@ -1,83 +1,65 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Activity, ScoringType } from '../../../../models';
+import { FormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Activity } from '../../../models';
+import { AdminState } from '../../store/admin.state';
+import * as AdminActions from '../../store/admin.actions';
+import * as AdminSelectors from '../../store/admin.selectors';
 
 @Component({
   selector: 'app-activities',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './activities.component.html'
+  imports: [CommonModule, RouterModule, FormsModule],
+  templateUrl: './activities.component.html',
+  styleUrls: ['./activities.component.css']
 })
-export class ActivitiesComponent {
-  activities: Activity[] = [
-    {
-      id: '1',
-      name: 'Karting',
-      description: 'Course de karting sur circuit',
-      establishmentId: 'est1',
-      scoringType: ScoringType.TIME,
-      maxScore: 100,
-      timeLimit: 10,
-      isActive: true,
-      createdAt: new Date(),
-      scoringConfig: {
-        pointsPerUnit: 10,
-        bonusMultiplier: 1.5,
-        penaltyPoints: 5,
-        timeBonusThreshold: 5
-      }
-    },
-    {
-      id: '2',
-      name: 'Bowling',
-      description: 'Partie de bowling',
-      establishmentId: 'est1',
-      scoringType: ScoringType.POINTS,
-      maxScore: 300,
-      isActive: true,
-      createdAt: new Date(),
-      scoringConfig: {
-        pointsPerUnit: 1,
-        bonusMultiplier: 2,
-        penaltyPoints: 0
-      }
-    },
-    {
-      id: '3',
-      name: 'Laser Game',
-      description: 'Jeu de laser tag',
-      establishmentId: 'est1',
-      scoringType: ScoringType.POINTS,
-      maxScore: 1000,
-      timeLimit: 15,
-      isActive: true,
-      createdAt: new Date(),
-      scoringConfig: {
-        pointsPerUnit: 10,
-        bonusMultiplier: 1.2,
-        penaltyPoints: 2
-      }
-    }
-  ];
+export class ActivitiesComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
 
-  createActivity() {
+  // Selectors
+  activities$: Observable<Activity[]>;
+  activitiesLoading$: Observable<boolean>;
+  activitiesError$: Observable<string | null>;
+  selectedActivity$: Observable<Activity | null>;
+
+  constructor(private readonly store: Store<{ admin: AdminState }>) {
+    this.activities$ = this.store.select(AdminSelectors.selectActivities);
+    this.activitiesLoading$ = this.store.select(AdminSelectors.selectActivitiesLoading);
+    this.activitiesError$ = this.store.select(AdminSelectors.selectActivitiesError);
+    this.selectedActivity$ = this.store.select(AdminSelectors.selectSelectedActivity);
+  }
+
+  ngOnInit(): void {
+    this.store.dispatch(AdminActions.loadActivities());
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  createActivity(): void {
     console.log('Create new activity');
     // TODO: Implémenter la création d'activité
   }
 
-  viewActivity(activityId: string) {
+  viewActivity(activityId: string): void {
     console.log('View activity:', activityId);
     // TODO: Implémenter la vue détaillée
   }
 
-  editActivity(activityId: string) {
+  editActivity(activityId: string): void {
     console.log('Edit activity:', activityId);
     // TODO: Implémenter l'édition
   }
 
-  deleteActivity(activityId: string) {
-    console.log('Delete activity:', activityId);
-    // TODO: Implémenter la suppression
+  deleteActivity(activityId: string): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')) {
+      this.store.dispatch(AdminActions.deleteActivity({ activityId }));
+    }
   }
 }

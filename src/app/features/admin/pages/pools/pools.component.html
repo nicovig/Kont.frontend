@@ -1,67 +1,77 @@
-<div class="p-8">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">Gestion des Pools</h1>
-    <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+<div class="pools-container">
+  <div class="pools-header">
+    <h1>Gestion des Pools</h1>
+    <button class="btn btn-primary" (click)="createPool()">
       Créer une Pool
     </button>
   </div>
-  
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @for (pool of pools; track pool.id) {
-      <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-        <div class="flex justify-between items-start mb-2">
-          <h3 class="text-lg font-semibold text-gray-900">{{ pool.name }}</h3>
-          <span class="px-2 py-1 rounded-full text-xs font-bold uppercase"
-                [ngClass]="{
-                  'bg-green-100 text-green-800': pool.status === 'in_progress',
-                  'bg-yellow-100 text-yellow-800': pool.status === 'waiting_players',
-                  'bg-blue-100 text-blue-800': pool.status === 'ready',
-                  'bg-gray-100 text-gray-800': pool.status === 'created',
-                  'bg-red-100 text-red-800': pool.status === 'finished'
-                }">
-            {{ pool.status === 'in_progress' ? 'En cours' : 
-               pool.status === 'waiting_players' ? 'En attente' :
-               pool.status === 'ready' ? 'Prête' :
-               pool.status === 'created' ? 'Créée' : 'Terminée' }}
-          </span>
-        </div>
+
+  <div class="pools-filters">
+    <div class="filter-group">
+      <label for="statusFilter">Statut :</label>
+      <select id="statusFilter" [(ngModel)]="selectedStatus" (change)="filterPools()">
+        <option value="">Tous</option>
+        <option value="Pending">En attente</option>
+        <option value="Active">Actives</option>
+        <option value="Completed">Terminées</option>
+        <option value="Cancelled">Annulées</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="pools-grid" *ngIf="filteredPools$ | async as pools">
+    <div class="pool-card" *ngFor="let pool of pools" [class]="'status-' + pool.status.toLowerCase()">
+      <div class="pool-header">
+        <h3>{{ pool.name }}</h3>
+        <span class="pool-status" [class]="'status-' + pool.status.toLowerCase()">
+          {{ getStatusText(pool.status) }}
+        </span>
+      </div>
+      
+      <div class="pool-content">
+        <p class="pool-description" *ngIf="pool.description">{{ pool.description }}</p>
         
-        <p class="text-gray-600 mb-4">{{ pool.description }}</p>
-        
-        <div class="space-y-2 mb-4 text-sm">
-          <div class="flex justify-between">
-            <span class="text-gray-500">Entreprise:</span>
-            <span class="font-medium">{{ pool.eventInfo.companyName }}</span>
+        <div class="pool-stats">
+          <div class="stat">
+            <span class="stat-label">Joueurs inscrits :</span>
+            <span class="stat-value">{{ pool.playerRegistrations.length }}</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Date:</span>
-            <span class="font-medium">{{ pool.eventInfo.eventDate | date:'dd/MM/yyyy' }}</span>
+          <div class="stat">
+            <span class="stat-label">Sessions :</span>
+            <span class="stat-value">{{ pool.gameSessions.length }}</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Joueurs:</span>
-            <span class="font-medium">{{ pool.currentPlayers }}/{{ pool.maxPlayers }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Activités:</span>
-            <span class="font-medium">{{ pool.activities.length }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Référents:</span>
-            <span class="font-medium">{{ pool.referents.length }}</span>
+          <div class="stat">
+            <span class="stat-label">Créée le :</span>
+            <span class="stat-value">{{ pool.createdAt | date:'short' }}</span>
           </div>
         </div>
-        
-        <div class="flex gap-2">
-          <button (click)="editPool(pool.id)" 
-                  class="flex-1 bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+
+        <div class="pool-actions">
+          <button class="btn btn-sm btn-outline" [routerLink]="['/admin/pools', pool.id]">
+            Voir détails
+          </button>
+          <button class="btn btn-sm btn-secondary" (click)="editPool(pool)">
             Modifier
           </button>
-          <a [routerLink]="['/admin/pools', pool.id]"
-             class="flex-1 bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700 text-center">
-            Voir
-          </a>
+          <button class="btn btn-sm btn-danger" (click)="deletePool(pool.id)" 
+                  *ngIf="pool.status === 'Pending'">
+            Supprimer
+          </button>
         </div>
       </div>
-    }
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="(filteredPools$ | async)?.length === 0">
+    <div class="empty-icon">🏊</div>
+    <h3>Aucune pool trouvée</h3>
+    <p>Créez votre première pool pour commencer à organiser des événements.</p>
+    <button class="btn btn-primary" (click)="createPool()">
+      Créer une Pool
+    </button>
+  </div>
+
+  <div class="loading-overlay" *ngIf="poolsLoading$ | async">
+    <div class="spinner"></div>
   </div>
 </div>

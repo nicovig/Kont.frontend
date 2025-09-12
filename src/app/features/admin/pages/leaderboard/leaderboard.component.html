@@ -1,83 +1,85 @@
-<div class="p-8">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">Classements</h1>
-    <div class="flex gap-4">
-      <select [(ngModel)]="selectedPool" 
-              (change)="filterByPool()"
-              class="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm">
+<div class="leaderboard-container">
+  <div class="leaderboard-header">
+    <h1>Classement des Joueurs</h1>
+  </div>
+
+  <div class="leaderboard-filters">
+    <div class="filter-group">
+      <label for="poolFilter">Pool :</label>
+      <select id="poolFilter" [(ngModel)]="selectedPool" (change)="filterByPool()">
         <option value="">Toutes les pools</option>
-        @for (pool of pools; track pool.id) {
-          <option [value]="pool.id">{{ pool.name }}</option>
-        }
+        <option *ngFor="let pool of pools" [value]="pool.id">{{ pool.name }}</option>
       </select>
-      <select [(ngModel)]="selectedPeriod" 
-              (change)="filterByPeriod()"
-              class="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm">
+    </div>
+    
+    <div class="filter-group">
+      <label for="periodFilter">Période :</label>
+      <select id="periodFilter" [(ngModel)]="selectedPeriod" (change)="filterByPeriod()">
         <option value="all">Toutes les périodes</option>
         <option value="week">Cette semaine</option>
         <option value="month">Ce mois</option>
+        <option value="year">Cette année</option>
       </select>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-lg shadow-md p-6 text-center">
-      <h3 class="text-sm font-medium text-gray-500 uppercase mb-2">Total Participants</h3>
-      <div class="text-3xl font-bold text-blue-600">{{ totalParticipants }}</div>
+  <div class="leaderboard-stats">
+    <div class="stat-card">
+      <div class="stat-value">{{ totalParticipants }}</div>
+      <div class="stat-label">Participants</div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-6 text-center">
-      <h3 class="text-sm font-medium text-gray-500 uppercase mb-2">Score Moyen</h3>
-      <div class="text-3xl font-bold text-green-600">{{ averageScore }}</div>
+    <div class="stat-card">
+      <div class="stat-value">{{ averageScore }}</div>
+      <div class="stat-label">Score moyen</div>
     </div>
-    <div class="bg-white rounded-lg shadow-md p-6 text-center">
-      <h3 class="text-sm font-medium text-gray-500 uppercase mb-2">Activités Total</h3>
-      <div class="text-3xl font-bold text-purple-600">{{ totalActivities }}</div>
+    <div class="stat-card">
+      <div class="stat-value">{{ totalActivities }}</div>
+      <div class="stat-label">Activités totales</div>
     </div>
   </div>
 
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="grid grid-cols-6 gap-4 bg-gray-50 px-6 py-4 font-semibold text-gray-700 border-b">
-      <div>Rang</div>
-      <div>Joueur</div>
-      <div>Pool</div>
-      <div>Score</div>
-      <div>Activités</div>
-      <div>Tendance</div>
-    </div>
-    
-    <div class="divide-y divide-gray-200">
-      @for (player of filteredPlayers; track player.id; let i = $index) {
-        <div class="grid grid-cols-6 gap-4 px-6 py-4 items-center"
-             [class.bg-gradient-to-r]="i < 3"
-             [class.from-yellow-50]="i < 3"
-             [class.to-transparent]="i < 3">
-          <div class="text-xl font-bold"
-               [ngClass]="{
-                 'text-yellow-500': i === 0,
-                 'text-gray-400': i === 1,
-                 'text-orange-600': i === 2,
-                 'text-gray-600': i > 2
-               }">
-            {{ i + 1 }}
-          </div>
-          <div>
-            <div class="font-semibold text-gray-900">{{ player.name }}</div>
-            <div class="text-sm text-gray-500">{{ player.email }}</div>
-          </div>
-          <div class="text-sm text-gray-600">{{ player.poolName }}</div>
-          <div class="font-semibold text-gray-900">{{ player.score }}</div>
-          <div class="text-sm text-gray-600">{{ player.activitiesCompleted }}</div>
-          <div class="flex items-center">
-            @if (player.trend > 0) {
-              <span class="text-green-600 text-sm">↗ +{{ player.trend }}</span>
-            } @else if (player.trend < 0) {
-              <span class="text-red-600 text-sm">↘ {{ player.trend }}</span>
-            } @else {
-              <span class="text-gray-500 text-sm">→ 0</span>
-            }
-          </div>
-        </div>
-      }
-    </div>
+  <div class="leaderboard-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Rang</th>
+          <th>Joueur</th>
+          <th>Score Total</th>
+          <th>Pourcentage</th>
+          <th>Activités</th>
+          <th>Dernière mise à jour</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let player of filteredPlayers; let i = index">
+          <td class="rank">
+            <span class="rank-number" [class]="'rank-' + (i + 1)">
+              {{ i + 1 }}
+            </span>
+          </td>
+          <td class="player">
+            <div class="player-info">
+              <div class="player-name">Joueur {{ player.playerEntity }}</div>
+              <div class="player-id">ID: {{ player.playerEntity }}</div>
+            </div>
+          </td>
+          <td class="score">{{ player.totalScore }}</td>
+          <td class="percentage">
+            <div class="percentage-bar">
+              <div class="percentage-fill" [style.width.%]="player.percentage"></div>
+              <span class="percentage-text">{{ player.percentage }}%</span>
+            </div>
+          </td>
+          <td class="activities">{{ player.activitiesPlayed }}</td>
+          <td class="last-update">{{ player.lastUpdatedAt | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredPlayers.length === 0">
+    <div class="empty-icon">🏆</div>
+    <h3>Aucun joueur trouvé</h3>
+    <p>Aucun joueur ne correspond aux critères de filtrage sélectionnés.</p>
   </div>
 </div>

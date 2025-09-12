@@ -1,0 +1,110 @@
+<div class="settings-container">
+  <div class="header">
+    <h1>Paramètres</h1>
+  </div>
+  
+  <div class="settings-content">
+    <div class="settings-section">
+      <h2>Paramètres Généraux</h2>
+      <div class="setting-item">
+        <label for="establishmentName">Nom de l'établissement</label>
+        <input type="text" id="establishmentName" [(ngModel)]="settings.establishmentName" 
+               class="form-input">
+      </div>
+      
+      <div class="setting-item">
+        <label for="timezone">Fuseau horaire</label>
+        <select id="timezone" [(ngModel)]="settings.timezone" class="form-select">
+          <option value="Europe/Paris">Europe/Paris</option>
+          <option value="Europe/London">Europe/London</option>
+          <option value="America/New_York">America/New_York</option>
+        </select>
+      </div>
+      
+      <div class="setting-item">
+        <label for="language">Langue</label>
+        <select id="language" [(ngModel)]="settings.language" class="form-select">
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <h2>Notifications</h2>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="settings.emailNotifications">
+          <span class="checkmark"></span>
+          Notifications par email
+        </label>
+      </div>
+      
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="settings.pushNotifications">
+          <span class="checkmark"></span>
+          Notifications push
+        </label>
+      </div>
+      
+      <div class="setting-item">
+        <label for="notificationEmail">Email de notification</label>
+        <input type="email" id="notificationEmail" [(ngModel)]="settings.notificationEmail" 
+               class="form-input">
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <h2>Sécurité</h2>
+      <div class="setting-item">
+        <label for="currentPassword">Mot de passe actuel</label>
+        <input type="password" id="currentPassword" [(ngModel)]="passwordForm.currentPassword" 
+               class="form-input">
+      </div>
+      
+      <div class="setting-item">
+        <label for="newPassword">Nouveau mot de passe</label>
+        <input type="password" id="newPassword" [(ngModel)]="passwordForm.newPassword" 
+               class="form-input">
+      </div>
+      
+      <div class="setting-item">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <input type="password" id="confirmPassword" [(ngModel)]="passwordForm.confirmPassword" 
+               class="form-input">
+      </div>
+      
+      <button class="btn btn-primary" (click)="changePassword()">
+        Changer le mot de passe
+      </button>
+    </div>
+    
+    <div class="settings-section">
+      <h2>Données</h2>
+      <div class="setting-item">
+        <button class="btn btn-secondary" (click)="exportData()">
+          Exporter les données
+        </button>
+        <p class="help-text">Téléchargez une copie de toutes vos données</p>
+      </div>
+      
+      <div class="setting-item">
+        <button class="btn btn-danger" (click)="deleteAccount()">
+          Supprimer le compte
+        </button>
+        <p class="help-text danger">Cette action est irréversible</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="actions">
+    <button class="btn btn-primary" (click)="saveSettings()">
+      Sauvegarder
+    </button>
+    <button class="btn btn-outline" (click)="resetSettings()">
+      Réinitialiser
+    </button>
+  </div>
+</div>
