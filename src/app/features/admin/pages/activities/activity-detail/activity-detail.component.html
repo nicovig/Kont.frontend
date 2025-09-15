@@ -1,0 +1,126 @@
+<div class="activity-detail-container" *ngIf="activity$ | async as activity; else loadingOrError">
+  <div class="detail-header">
+    <button type="button" class="btn btn-secondary" (click)="onBack()">
+      ← Retour à la liste
+    </button>
+    <div class="header-actions">
+      <button type="button" class="btn btn-primary" (click)="onEdit()">
+        Modifier
+      </button>
+      <button type="button" class="btn btn-danger" (click)="onDelete()">
+        Supprimer
+      </button>
+    </div>
+  </div>
+
+  <div class="activity-detail">
+    <div class="activity-main-info">
+      <div class="activity-title">
+        <h1>{{ activity.name }}</h1>
+        <span 
+          class="activity-status"
+          [ngClass]="getActivityStatus(activity).class"
+        >
+          {{ getActivityStatus(activity).text }}
+        </span>
+      </div>
+      
+      <div class="activity-description" *ngIf="activity.description">
+        <h3>Description</h3>
+        <p>{{ activity.description }}</p>
+      </div>
+    </div>
+
+    <div class="activity-info-grid">
+      <div class="info-card">
+        <div class="info-header">
+          <span class="info-icon">📍</span>
+          <h3>Site</h3>
+        </div>
+        <div class="info-content">
+          <p class="info-value">{{ activity.site.name }}</p>
+          <p class="info-subtitle" *ngIf="activity.site.address">
+            {{ activity.site.address }}
+          </p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-header">
+          <span class="info-icon">📊</span>
+          <h3>Métriques de scoring</h3>
+        </div>
+        <div class="info-content">
+          <p class="info-value">{{ getScoringMetricsCount(activity) }}</p>
+          <p class="info-subtitle">métriques configurées</p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-header">
+          <span class="info-icon">👤</span>
+          <h3>Créée par</h3>
+        </div>
+        <div class="info-content">
+          <p class="info-value">{{ activity.createdBy.firstname }} {{ activity.createdBy.lastname }}</p>
+          <p class="info-subtitle">{{ activity.createdBy.email }}</p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-header">
+          <span class="info-icon">📅</span>
+          <h3>Date de création</h3>
+        </div>
+        <div class="info-content">
+          <p class="info-value">{{ formatDate(activity.createdAt) }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-scoring-metrics" *ngIf="activity.scoringMetrics && activity.scoringMetrics.length > 0">
+      <h3>Métriques de scoring</h3>
+      <div class="metrics-list">
+        <div class="metric-item" *ngFor="let metric of activity.scoringMetrics">
+          <div class="metric-info">
+            <span class="metric-name">{{ metric.name }}</span>
+            <span class="metric-type">{{ metric.unit }}</span>
+          </div>
+          <div class="metric-details">
+            <span class="metric-weight">Coefficient de cette métrique: {{ metric.coefficient }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-actions">
+      <button type="button" class="btn btn-primary" (click)="onEdit()">
+        Modifier l'activité
+      </button>
+      <button type="button" class="btn btn-outline">
+        Voir les statistiques
+      </button>
+      <button type="button" class="btn btn-outline">
+        Gérer les métriques
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <div class="loading-error-container">
+    <div class="loading-overlay" *ngIf="activityLoading$ | async">
+      <div class="spinner"></div>
+      <p>Chargement de l'activité...</p>
+    </div>
+    
+    <div class="error-message" *ngIf="activityError$ | async as error">
+      <div class="error-icon">⚠️</div>
+      <h3>Erreur de chargement</h3>
+      <p>{{ error }}</p>
+      <button type="button" class="btn btn-primary" (click)="onBack()">
+        Retour à la liste
+      </button>
+    </div>
+  </div>
+</ng-template>

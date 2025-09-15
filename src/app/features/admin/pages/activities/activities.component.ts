@@ -3,16 +3,26 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { Activity } from '../../../../models';
 import { AdminState } from '../../store/admin.state';
 import * as AdminActions from '../../store/admin.actions';
 import * as AdminSelectors from '../../store/admin.selectors';
+import { ActivityFormComponent } from './activity-form/activity-form.component';
+import { ActivityDetailComponent } from './activity-detail/activity-detail.component';
+
+export type ViewMode = 'list' | 'create' | 'edit' | 'detail';
 
 @Component({
   selector: 'app-activities',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    FormsModule,
+    ActivityFormComponent,
+    ActivityDetailComponent
+  ],
   templateUrl: './activities.component.html',
   styleUrls: ['./activities.component.css']
 })
@@ -25,6 +35,11 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   activitiesError$: Observable<string | null>;
   selectedActivity$: Observable<Activity | null>;
 
+  // Component state
+  currentView: ViewMode = 'list';
+  selectedActivity: Activity | null = null;
+  activityToEdit: Activity | null = null;
+
   constructor(private readonly store: Store<{ admin: AdminState }>) {
     this.activities$ = this.store.select(AdminSelectors.selectActivities);
     this.activitiesLoading$ = this.store.select(AdminSelectors.selectActivitiesLoading);
@@ -34,6 +49,21 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.dispatch(AdminActions.loadActivities());
+    
+    // Écouter les changements d'état pour gérer les transitions
+    this.activitiesLoading$.pipe(takeUntil(this.destroy$)).subscribe(loading => {
+      if (!loading) {
+        // Vérifier s'il y a une erreur
+        this.activitiesError$.pipe(takeUntil(this.destroy$)).subscribe(error => {
+          if (!error && this.currentView !== 'list') {
+            // Retourner à la liste après une opération réussie
+            this.currentView = 'list';
+            this.selectedActivity = null;
+            this.activityToEdit = null;
+          }
+        });
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -41,24 +71,79 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  createActivity(): void {
-    console.log('Create new activity');
-    // TODO: Implémenter la création d'activité
+  // Navigation methods
+  showCreateForm(): void {
+    this.currentView = 'create';
+    this.selectedActivity = null;
+    this.activityToEdit = null;
   }
 
-  viewActivity(activityId: string): void {
-    console.log('View activity:', activityId);
-    // TODO: Implémenter la vue détaillée
+  showEditForm(activity: Activity): void {
+    this.currentView = 'edit';
+    this.activityToEdit = activity;
+    this.selectedActivity = null;
   }
 
-  editActivity(activityId: string): void {
-    console.log('Edit activity:', activityId);
-    // TODO: Implémenter l'édition
+  showActivityDetail(activity: Activity): void {
+    this.currentView = 'detail';
+    this.selectedActivity = activity;
+    this.activityToEdit = null;
+    this.store.dispatch(AdminActions.selectActivity({ activity }));
   }
 
+  backToList(): void {
+    this.currentView = 'list';
+    this.selectedActivity = null;
+    this.activityToEdit = null;
+    this.store.dispatch(AdminActions.selectActivity({ activity: null }));
+  }
+
+  // Form event handlers
+  onFormSubmitted(): void {
+    // Le formulaire a été soumis avec succès
+    // L'état sera géré par les effets NgRx
+    this.backToList();
+  }
+
+  onFormCancelled(): void {
+    this.backToList();
+  }
+
+  onEditRequested(activity: Activity): void {
+    this.showEditForm(activity);
+  }
+
+  // Activity actions
   deleteActivity(activityId: string): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette activité ? Cette action est irréversible.')) {
       this.store.dispatch(AdminActions.deleteActivity({ activityId }));
+    }
+  }
+
+  // Utility methods
+  formatDate(date: Date | string): string {
+    return new Date(date).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  getScoringMetricsCount(activity: Activity): number {
+    return activity.scoringMetrics?.length || 0;
+  }
+
+  getActivityStatus(activity: Activity): { text: string; class: string } {
+    const now = new Date();
+    const createdAt = new Date(activity.createdAt);
+    const daysSinceCreation = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysSinceCreation < 7) {
+      return { text: 'Nouvelle', class: 'status-new' };
+    } else if (daysSinceCreation < 30) {
+      return { text: 'Active', class: 'status-active' };
+    } else {
+      return { text: 'Ancienne', class: 'status-old' };
     }
   }
 }
