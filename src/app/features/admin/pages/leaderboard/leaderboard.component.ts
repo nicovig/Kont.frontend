@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { PlayerGlobalScore } from '../../../models';
+import { EventStatus, PlayerGlobalScore, PlayerType, PoolStatus } from '../../../../models';
 import { AdminState } from '../../store/admin.state';
 import * as AdminActions from '../../store/admin.actions';
 import * as AdminSelectors from '../../store/admin.selectors';
@@ -36,49 +36,35 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       activitiesPlayed: 8,
       calculatedAt: new Date(),
       lastUpdatedAt: new Date(),
-      playerEntity: 'player1',
-      poolEntity: 'pool1'
+      playerEntity: { id: '1', firstname: 'Player 1', lastname: 'Player 1', username: 'player1', playerType: PlayerType.Player, password: 'password', email: 'player1@example.com', createdAt: new Date() },
+      poolEntity: {
+        id: '1', name: 'Pool 1', qrCode: '1234567890', event: {
+          id: '1', name: 'Event 1',
+          eventLink: '',
+          site: {
+            id: '1', name: 'Site 1', address: '123 Main St', city: 'Anytown', state: 'CA', zipCode: '12345', country: 'USA', createdAt: new Date(),
+            phoneNumber: '',
+            email: '',
+            administrators: [],
+            activities: []
+          },
+          status: EventStatus.Pending,
+          createdAt: new Date(),
+          activities: [],
+          pools: []
+        }, playerRegistrations: [], gameSessions: [], createdAt: new Date(), endedAt: new Date(),
+        isActive: false,
+        isAllPlayersPresent: false,
+        status: PoolStatus.Pending
+      }
     },
-    {
-      id: '2',
-      totalScore: 140,
-      percentage: 92,
-      globalRank: 2,
-      activitiesPlayed: 7,
-      calculatedAt: new Date(),
-      lastUpdatedAt: new Date(),
-      playerEntity: 'player2',
-      poolEntity: 'pool1'
-    },
-    {
-      id: '3',
-      totalScore: 135,
-      percentage: 90,
-      globalRank: 3,
-      activitiesPlayed: 6,
-      calculatedAt: new Date(),
-      lastUpdatedAt: new Date(),
-      playerEntity: 'player3',
-      poolEntity: 'pool2'
-    },
-    {
-      id: '4',
-      totalScore: 130,
-      percentage: 88,
-      globalRank: 4,
-      activitiesPlayed: 5,
-      calculatedAt: new Date(),
-      lastUpdatedAt: new Date(),
-      playerEntity: 'player4',
-      poolEntity: 'pool2'
-    }
   ];
   
   get filteredPlayers() {
     let filtered = this.players;
     
     if (this.selectedPool) {
-      filtered = filtered.filter(p => p.poolEntity === this.selectedPool);
+      filtered = filtered.filter(p => p.poolEntity.id === this.selectedPool);
     }
     
     return filtered.sort((a, b) => b.totalScore - a.totalScore);

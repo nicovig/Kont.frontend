@@ -4,10 +4,10 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Pool, PoolStatus } from '../../../models';
 import { AdminState } from '../../store/admin.state';
 import * as AdminActions from '../../store/admin.actions';
 import * as AdminSelectors from '../../store/admin.selectors';
+import { Pool, PoolStatus } from '../../../../models';
 
 @Component({
   selector: 'app-pool-detail',

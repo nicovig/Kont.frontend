@@ -6,18 +6,18 @@ export const routes: Routes = [
     redirectTo: '/admin',
     pathMatch: 'full'
   },
-  {
-    path: 'super-admin',
-    loadChildren: () => import('./features/super-admin/super-admin.routes').then(m => m.routes)
-  },
+  // {
+  //   path: 'super-admin',
+  //   loadChildren: () => import('./features/super-admin/super-admin.routes').then(m => m.routes)
+  // },
   {
     path: 'admin',
     loadChildren: () => import('./features/admin/admin.routes').then(m => m.routes)
   },
-  {
-    path: 'user',
-    loadChildren: () => import('./features/user/user.routes').then(m => m.routes)
-  },
+  // {
+  //   path: 'user',
+  //   loadChildren: () => import('./features/user/user.routes').then(m => m.routes)
+  // },
   {
     path: '**',
     redirectTo: '/admin'

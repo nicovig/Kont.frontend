@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Pool, PoolStatus } from '../../../models';
+import { Pool, PoolStatus } from '../../../../models';
 import { AdminState } from '../../store/admin.state';
 import * as AdminActions from '../../store/admin.actions';
 import * as AdminSelectors from '../../store/admin.selectors';

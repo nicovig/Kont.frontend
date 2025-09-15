@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AdminState } from './admin.state';
+import { Pool, Event, Activity } from '../../../models';
 
 export const selectAdminState = createFeatureSelector<AdminState>('admin');
 
@@ -63,7 +64,7 @@ export const selectSelectedActivity = createSelector(
 
 export const selectActivitiesBySite = createSelector(
   selectActivities,
-  (activities, siteId: string) => activities.filter(a => a.site === siteId)
+  (activities: Activity[], siteId: string) => activities.filter(a => a.site.id === siteId)
 );
 
 // Events Selectors
@@ -89,7 +90,7 @@ export const selectSelectedEvent = createSelector(
 
 export const selectEventsBySite = createSelector(
   selectEvents,
-  (events, siteId: string) => events.filter(e => e.site === siteId)
+  (events: Event[], siteId: string) => events.filter(e => e.site.id === siteId)
 );
 
 // Pools Selectors
@@ -120,7 +121,7 @@ export const selectPoolStats = createSelector(
 
 export const selectPoolsByEvent = createSelector(
   selectPools,
-  (pools, eventId: string) => pools.filter(p => p.event === eventId)
+  (pools: Pool[], eventId: string) => pools.filter(p => p.event.id === eventId)
 );
 
 export const selectActivePools = createSelector(
@@ -194,7 +195,7 @@ export const selectPoolOverview = createSelector(
   (pool, stats, activities) => ({
     pool,
     stats,
-    poolActivities: pool ? activities.filter(a => pool.gameSessions.some(gs => gs === a.id)) : []
+    poolActivities: pool ? activities.filter(a => pool.gameSessions.some(gs => gs.activity.id === a.id)) : []
   })
 );
 

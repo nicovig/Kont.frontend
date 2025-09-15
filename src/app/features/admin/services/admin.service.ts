@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Administrator, Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData } from '../../../models';
@@ -9,7 +10,7 @@ import { PoolStats, DashboardStats, RecentActivity } from '../store/admin.state'
   providedIn: 'root'
 })
 export class AdminService {
-  private readonly baseUrl = '/api/admin';
+  private readonly baseUrl = `${environment.apiBaseUrl}/admin`;
 
   constructor(private readonly http: HttpClient) {}
 

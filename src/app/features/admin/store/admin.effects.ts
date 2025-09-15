@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -8,6 +8,9 @@ import * as AdminActions from './admin.actions';
 
 @Injectable()
 export class AdminEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly adminService = inject(AdminService);
+  private readonly store = inject(Store);
 
   // Auth Effects
   loginAdmin$ = createEffect(() =>
@@ -280,9 +283,5 @@ export class AdminEffects {
     )
   );
 
-  constructor(
-    private readonly actions$: Actions,
-    private readonly adminService: AdminService,
-    private readonly store: Store
-  ) {}
+  
 }

@@ -9,4 +9,5 @@ export interface Administrator extends User {
   manager?: Administrator;
   sites: Site[];
   role: Role;
+  isActive: boolean;
 }
