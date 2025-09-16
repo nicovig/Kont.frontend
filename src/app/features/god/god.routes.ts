@@ -20,6 +20,13 @@ export const routes: Routes = [
       { path: 'sites', loadComponent: () => import('./pages/sites/sites.component').then(m => m.GodSitesComponent) },
       { path: 'sites/new', loadComponent: () => import('./pages/sites/sites-edit/sites-edit.component').then(m => m.GodSitesEditComponent) },
       { path: 'sites/:id', loadComponent: () => import('./pages/sites/sites-edit/sites-edit.component').then(m => m.GodSitesEditComponent) },
+      { path: 'administrators', loadComponent: () => import('./pages/administrators/administrators.component').then(m => m.GodAdministratorsComponent) },
+      { path: 'administrators/new', loadComponent: () => import('./pages/administrators/administrators-edit/administrators-edit.component').then(m => m.GodAdministratorsEditComponent) },
+      { path: 'administrators/:id', loadComponent: () => import('./pages/administrators/administrators-edit/administrators-edit.component').then(m => m.GodAdministratorsEditComponent) },
+      { path: 'subscriptions', loadComponent: () => import('./pages/subscriptions/subscriptions.component').then(m => m.GodSubscriptionsComponent) },
+      { path: 'subscriptions/new', loadComponent: () => import('./pages/subscriptions/subscriptions-edit/subscriptions-edit.component').then(m => m.GodSubscriptionsEditComponent) },
+      { path: 'subscriptions/:id', loadComponent: () => import('./pages/subscriptions/subscriptions-edit/subscriptions-edit.component').then(m => m.GodSubscriptionsEditComponent) },
+      
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' }
     ]
   }

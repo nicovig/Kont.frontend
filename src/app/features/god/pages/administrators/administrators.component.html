@@ -1,0 +1,14 @@
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>Administrateurs</h1>
+      <a class="add" routerLink="/god/administrators/new">+</a>
+    </div>
+  </header>
+
+  <div class="full">
+    <app-god-administrators-list [administrators]="administrators" [loading]="loading" [error]="error" (delete)="remove($event)" (open)="openDetails($event)"></app-god-administrators-list>
+  </div>
+</div>
+
+

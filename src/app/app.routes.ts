@@ -8,7 +8,7 @@ export const routes: Routes = [
   },
   {
     path: 'god',
-    loadChildren: () => import('./features/god/admin.routes').then(m => m.routes)
+    loadChildren: () => import('./features/god/god.routes').then(m => m.routes)
   },
   // {
   //   path: 'super-admin',

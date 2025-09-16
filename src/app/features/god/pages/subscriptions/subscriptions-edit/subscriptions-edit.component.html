@@ -1,0 +1,31 @@
+<div class="wrap">
+  <div class="content">
+    <div class="card">
+      <h2 class="title-lg">{{ isNew ? 'Créer un abonnement' : 'Modifier un abonnement' }}</h2>
+      <form (submit)="$event.preventDefault()" novalidate>
+        <div class="row2">
+          <div>
+            <label>Type *</label>
+            <select [(ngModel)]="sub.subscriptionType" name="subscriptionType">
+              <option value="Deraou">Deraou</option>
+              <option value="Klasel">Klasel</option>
+              <option value="Stroll">Stroll</option>
+            </select>
+          </div>
+          <div>
+            <label>Payé le</label>
+            <input type="datetime-local" [(ngModel)]="sub.paidAt" name="paidAt" />
+          </div>
+        </div>
+        <div class="row">
+          <label>Expire le</label>
+          <input type="datetime-local" [(ngModel)]="sub.expiresAt" name="expiresAt" />
+        </div>
+        <button class="primary" (click)="onSave()" [disabled]="loading">{{ isNew ? 'Créer' : 'Modifier' }}</button>
+        <div class="error" *ngIf="error">{{ error }}</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+

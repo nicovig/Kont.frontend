@@ -31,6 +31,47 @@ export class GodService {
   deleteSite(siteId: string): Observable<void> {
     return this.http.delete<void>(`/sites/${siteId}`);
   }
+
+  getAdministrators(): Observable<Administrator[]> {
+    return this.http.get<Administrator[]>(`/administrators`);
+  }
+
+  getAdministrator(id: string): Observable<Administrator> {
+    return this.http.get<Administrator>(`/administrators/${id}`);
+  }
+
+  createAdministrator(admin: Omit<Administrator, 'id' | 'createdAt'>): Observable<Administrator> {
+    return this.http.post<Administrator>(`/administrators`, admin);
+  }
+
+  updateAdministrator(admin: Administrator): Observable<Administrator> {
+    return this.http.put<Administrator>(`/administrators/${admin.id}`, admin);
+  }
+
+  deleteAdministrator(id: string): Observable<void> {
+    return this.http.delete<void>(`/administrators/${id}`);
+  }
+
+  // Subscriptions
+  getSubscriptions(): Observable<import('../../../models').Subscription[]> {
+    return this.http.get<import('../../../models').Subscription[]>(`/subscriptions`);
+  }
+
+  getSubscription(id: string): Observable<import('../../../models').Subscription> {
+    return this.http.get<import('../../../models').Subscription>(`/subscriptions/${id}`);
+  }
+
+  createSubscription(sub: Omit<import('../../../models').Subscription, 'id'>): Observable<import('../../../models').Subscription> {
+    return this.http.post<import('../../../models').Subscription>(`/subscriptions`, sub);
+  }
+
+  updateSubscription(sub: import('../../../models').Subscription): Observable<import('../../../models').Subscription> {
+    return this.http.put<import('../../../models').Subscription>(`/subscriptions/${sub.id}`, sub);
+  }
+
+  deleteSubscription(id: string): Observable<void> {
+    return this.http.delete<void>(`/subscriptions/${id}`);
+  }
 }
 
 

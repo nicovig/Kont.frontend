@@ -1,0 +1,35 @@
+<div class="list-card">
+  <div class="header">
+    <h2 class="title-lg">Abonnements</h2>
+    <a class="add" routerLink="/god/subscriptions/new">Ajouter</a>
+  </div>
+
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z1 table">
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef> Type </th>
+      <td mat-cell *matCellDef="let s"> {{ s.subscriptionType }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="paidAt">
+      <th mat-header-cell *matHeaderCellDef> Payé le </th>
+      <td mat-cell *matCellDef="let s"> {{ s.paidAt | date:'short' }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="expiresAt">
+      <th mat-header-cell *matHeaderCellDef> Expire le </th>
+      <td mat-cell *matCellDef="let s"> {{ s.expiresAt | date:'short' }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let s">
+        <a mat-button color="primary" [routerLink]="['/god/subscriptions', s.id]">Détails</a>
+        <button mat-button color="warn" (click)="confirmDelete(s.id)">Supprimer</button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+

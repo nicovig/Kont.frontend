@@ -3,9 +3,11 @@
     <nav class="menu">
       <a routerLink="/god/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="item">Dashboard</a>
       <a routerLink="/god/sites" routerLinkActive="active" class="item">Sites</a>
+      <a routerLink="/god/administrators" routerLinkActive="active" class="item">Administrateurs</a>
+      <a routerLink="/god/subscriptions" routerLinkActive="active" class="item">Abonnements</a>
     </nav>
   </div>
-</header>
-<main class="content">
-  <router-outlet></router-outlet>
-</main>
+  </header>
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
