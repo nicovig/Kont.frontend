@@ -9,20 +9,8 @@ import { Site } from '../../../../../models';
   selector: 'app-god-sites-edit',
   standalone: true,
   imports: [CommonModule, GodSiteFormComponent],
-  template: `
-    <div class="wrap">
-      <header class="hero"><div class="hero-inner"><h1>{{ isNew ? 'Créer un site' : 'Modifier un site' }}</h1></div></header>
-      <div class="content">
-        <app-god-site-form [value]="site" [loading]="loading" [error]="error" (save)="onSave($event)"></app-god-site-form>
-      </div>
-    </div>
-  `,
-  styles: [
-    `.wrap{background:#ffffff;min-height:100vh;color:#111827}`,
-    `.hero{background:linear-gradient(90deg,#7c3aed,#06b6d4);padding:24px 0;color:#fff}`,
-    `.hero-inner{max-width:1100px;margin:0 auto;padding:0 20px}`,
-    `.content{max-width:1100px;margin:20px auto;padding:0 20px}`
-  ]
+  templateUrl: './sites-edit.component.html',
+  styleUrls: ['./sites-edit.component.css']
 })
 export class GodSitesEditComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

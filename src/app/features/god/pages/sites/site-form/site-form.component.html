@@ -39,7 +39,7 @@
         <input [(ngModel)]="form.email" name="email" required placeholder="contact@exemple.com" />
       </div>
     </div>
-    <button class="primary" (click)="submit()" [disabled]="loading">{{ value?.id ? 'Enregistrer' : 'Créer' }}</button>
+    <button class="primary" (click)="submit()" [disabled]="loading">{{ value?.id ? 'Modifier' : 'Créer' }}</button>
     <div class="error" *ngIf="error">{{ error }}</div>
   </form>
 </div>

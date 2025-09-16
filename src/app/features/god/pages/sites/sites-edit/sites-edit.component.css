@@ -1,0 +1,4 @@
+.wrap{background:#ffffff;min-height:100vh;color:#111827}
+.hero{background:linear-gradient(90deg,#7c3aed,#06b6d4);padding:24px 0;color:#fff}
+.hero-inner{max-width:1100px;margin:0 auto;padding:0 20px}
+.content{max-width:1100px;margin:20px auto;padding:0 20px}
