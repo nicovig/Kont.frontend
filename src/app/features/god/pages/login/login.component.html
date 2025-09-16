@@ -1,0 +1,20 @@
+<div class="auth">
+  <div class="panel">
+    <h1>God</h1>
+    <p class="subtitle">Accès supervision</p>
+    <form (submit)="$event.preventDefault()" class="form" novalidate>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="email" name="email" required />
+      </div>
+      <div class="field">
+        <label>Mot de passe</label>
+        <input type="password" [(ngModel)]="password" name="password" required />
+      </div>
+      <button type="button" class="primary" (click)="onSubmit()">Se connecter</button>
+    </form>
+  </div>
+</div>
+
+
+

@@ -1,0 +1,8 @@
+.list-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.06);padding:12px}
+.title-lg{font-size:18px;margin:0 0 10px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.add{padding:8px 12px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;color:#111827;text-decoration:none}
+.toolbar{display:flex;justify-content:flex-end;margin-bottom:10px}
+.filter{min-width:280px}
+.table{width:100%}
+

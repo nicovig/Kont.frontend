@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, exhaustMap, concatMap, mergeMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AdminService } from '../services/admin.service';
 import * as AdminActions from './admin.actions';
@@ -16,7 +16,7 @@ export class AdminEffects {
   loginAdmin$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.loginAdmin),
-      switchMap(({ email, password }) =>
+      exhaustMap(({ email, password }) =>
         this.adminService.login(email, password).pipe(
           map(admin => AdminActions.loginAdminSuccess({ admin })),
           catchError(error => of(AdminActions.loginAdminFailure({ error: error.message })))

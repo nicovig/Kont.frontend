@@ -1,0 +1,14 @@
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>Sites</h1>
+      <a class="add" routerLink="/god/sites/new">+</a>
+    </div>
+  </header>
+
+  <div class="full">
+    <app-god-sites-list [sites]="sites" [loading]="loading" [error]="error" (delete)="remove($event)" (open)="openDetails($event)"></app-god-sites-list>
+  </div>
+</div>
+
+

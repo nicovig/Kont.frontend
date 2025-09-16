@@ -1,0 +1,47 @@
+<div class="card">
+  <h2 class="title-lg">{{ value?.id ? 'Modifier un site' : 'Créer un site' }}</h2>
+  <form (submit)="$event.preventDefault()" novalidate>
+    <div class="row">
+      <label>Nom <span class="req">*</span></label>
+      <input [(ngModel)]="form.name" name="name" required placeholder="Ex: Centre Paris 01" />
+    </div>
+    <div class="row">
+      <label>Adresse <span class="req">*</span></label>
+      <input [(ngModel)]="form.address" name="address" required placeholder="12 rue de Rivoli" />
+    </div>
+    <div class="row2">
+      <div>
+        <label>Ville <span class="req">*</span></label>
+        <input [(ngModel)]="form.city" name="city" required placeholder="Paris" />
+      </div>
+      <div>
+        <label>Code postal <span class="req">*</span></label>
+        <input [(ngModel)]="form.zipCode" name="zipCode" required placeholder="75001" />
+      </div>
+    </div>
+    <div class="row2">
+      <div>
+        <label>Pays <span class="req">*</span></label>
+        <input [(ngModel)]="form.country" name="country" required placeholder="France" />
+      </div>
+      <div>
+        <label>État/Dept <span class="req">*</span></label>
+        <input [(ngModel)]="form.state" name="state" required placeholder="IDF" />
+      </div>
+    </div>
+    <div class="row2">
+      <div>
+        <label>Téléphone <span class="req">*</span></label>
+        <input [(ngModel)]="form.phoneNumber" name="phoneNumber" required placeholder="01 02 03 04 05" />
+      </div>
+      <div>
+        <label>Email <span class="req">*</span></label>
+        <input [(ngModel)]="form.email" name="email" required placeholder="contact@exemple.com" />
+      </div>
+    </div>
+    <button class="primary" (click)="submit()" [disabled]="loading">{{ value?.id ? 'Enregistrer' : 'Créer' }}</button>
+    <div class="error" *ngIf="error">{{ error }}</div>
+  </form>
+</div>
+
+

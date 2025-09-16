@@ -6,6 +6,8 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { adminReducer } from './features/admin/store/admin.reducer';
 import { AdminEffects } from './features/admin/store/admin.effects';
+import { godReducer } from './features/god/store/god.reducer';
+import { GodEffects } from './features/god/store/god.effect';
 import { environment } from '../environments/environment';
 
 import { routes } from './app.routes';
@@ -19,9 +21,10 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
     provideStore({
-      admin: adminReducer
+      admin: adminReducer,
+      god: godReducer
     }),
-    provideEffects([AdminEffects]),
+    provideEffects([AdminEffects, GodEffects]),
     ...(!environment.production ? [provideStoreDevtools()] : [])
   ]
 };
