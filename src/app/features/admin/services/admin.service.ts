@@ -154,16 +154,28 @@ export class AdminService {
   }
 
   // Game Sessions
-  getPoolGameSessions(poolId: string): Observable<GameSession[]> {
-    return this.http.get<GameSession[]>(`/pools/${poolId}/sessions`);
+  getGameSessionsByEvent(eventId: string): Observable<GameSession[]> {
+    return this.http.get<GameSession[]>(`/gamesessions/by-event/${eventId}`);
   }
 
-  createGameSession(poolId: string, session: Omit<GameSession, 'id' | 'createdAt'>): Observable<GameSession> {
-    return this.http.post<GameSession>(`/pools/${poolId}/sessions`, session);
+  createGameSessionForEvent(eventId: string, activityId: string): Observable<GameSession> {
+    return this.http.post<GameSession>(`/gamesessions/${eventId}`, { activityId });
   }
 
-  updateGameSession(poolId: string, sessionId: string, session: GameSession): Observable<GameSession> {
-    return this.http.put<GameSession>(`/pools/${poolId}/sessions/${sessionId}`, session);
+  updateGameSessionStatus(sessionId: string, status: 'Pending' | 'Active' | 'Completed' | 'Cancelled'): Observable<GameSession> {
+    return this.http.put<GameSession>(`/gamesessions/${sessionId}/status/${status}`, {});
+  }
+
+  deleteGameSession(sessionId: string): Observable<void> {
+    return this.http.delete<void>(`/gamesessions/${sessionId}`);
+  }
+
+  updateGameSessionStartTime(sessionId: string, startedAt: Date): Observable<GameSession> {
+    return this.http.put<GameSession>(`/gamesessions/${sessionId}/start-time`, { id: sessionId, startedAt });
+  }
+
+  updateGameSessionEndTime(sessionId: string, endedAt: Date): Observable<GameSession> {
+    return this.http.put<GameSession>(`/gamesessions/${sessionId}/end-time`, { id: sessionId, endedAt });
   }
 
   // Activity Summary

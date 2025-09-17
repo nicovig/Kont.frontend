@@ -156,73 +156,6 @@ export const adminReducer = createReducer(
     selectedEvent: event
   })),
 
-  // Pools Reducers
-  on(AdminActions.loadPools, (state) => ({
-    ...state,
-    poolsLoading: true,
-    poolsError: null
-  })),
-
-  on(AdminActions.loadPoolsSuccess, (state, { pools }) => ({
-    ...state,
-    pools,
-    poolsLoading: false,
-    poolsError: null
-  })),
-
-  on(AdminActions.loadPoolsFailure, (state, { error }) => ({
-    ...state,
-    poolsLoading: false,
-    poolsError: error
-  })),
-
-  on(AdminActions.createPoolSuccess, (state, { pool }) => ({
-    ...state,
-    pools: [...state.pools, pool]
-  })),
-
-  on(AdminActions.updatePoolSuccess, (state, { pool }) => ({
-    ...state,
-    pools: state.pools.map(p => p.id === pool.id ? pool : p),
-    selectedPool: state.selectedPool?.id === pool.id ? pool : state.selectedPool
-  })),
-
-  on(AdminActions.deletePoolSuccess, (state, { poolId }) => ({
-    ...state,
-    pools: state.pools.filter(p => p.id !== poolId),
-    selectedPool: state.selectedPool?.id === poolId ? null : state.selectedPool
-  })),
-
-  on(AdminActions.selectPool, (state, { pool }) => ({
-    ...state,
-    selectedPool: pool
-  })),
-
-  on(AdminActions.loadPoolStatsSuccess, (state, { poolId, stats }) => ({
-    ...state,
-    poolStats: state.selectedPool?.id === poolId ? stats : state.poolStats
-  })),
-
-  on(AdminActions.validateAllPlayersPresentSuccess, (state, { poolId }) => ({
-    ...state,
-    pools: state.pools.map(p => 
-      p.id === poolId ? { ...p, isAllPlayersPresent: true } : p
-    ),
-    selectedPool: state.selectedPool?.id === poolId 
-      ? { ...state.selectedPool, isAllPlayersPresent: true }
-      : state.selectedPool
-  })),
-
-  on(AdminActions.endPoolSuccess, (state, { poolId }) => ({
-    ...state,
-    pools: state.pools.map(p => 
-      p.id === poolId ? { ...p, status: 'Completed' as any, endedAt: new Date() } : p
-    ),
-    selectedPool: state.selectedPool?.id === poolId 
-      ? { ...state.selectedPool, status: 'Completed' as any, endedAt: new Date() }
-      : state.selectedPool
-  })),
-
   // Dashboard Reducers
   on(AdminActions.loadDashboardStats, (state) => ({
     ...state,
@@ -262,22 +195,4 @@ export const adminReducer = createReducer(
       recentActivity: [update, ...state.dashboardStats.recentActivity].slice(0, 10)
     } : state.dashboardStats
   })),
-
-  // Group Management Reducers
-  on(AdminActions.updatePlayerGroupSuccess, (state, { poolId, playerId, newGroupId }) => ({
-    ...state,
-    // Update pool stats if needed
-    poolStats: state.poolStats ? {
-      ...state.poolStats
-    } : state.poolStats
-  })),
-
-  // Referent Management Reducers
-  on(AdminActions.assignReferentSuccess, (state, { poolId, referentId }) => ({
-    ...state,
-    // Update pool with referent assignment
-    pools: state.pools.map(p => 
-      p.id === poolId ? { ...p } : p
-    )
-  }))
 );

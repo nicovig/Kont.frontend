@@ -173,91 +173,6 @@ export class AdminEffects {
     )
   );
 
-  // Pools Effects
-  loadPools$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.loadPools),
-      switchMap(() =>
-        this.adminService.getPools().pipe(
-          map(pools => AdminActions.loadPoolsSuccess({ pools })),
-          catchError(error => of(AdminActions.loadPoolsFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  createPool$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.createPool),
-      switchMap(({ pool }) =>
-        this.adminService.createPool(pool).pipe(
-          map(createdPool => AdminActions.createPoolSuccess({ pool: createdPool })),
-          catchError(error => of(AdminActions.createPoolFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  updatePool$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.updatePool),
-      switchMap(({ pool }) =>
-        this.adminService.updatePool(pool).pipe(
-          map(updatedPool => AdminActions.updatePoolSuccess({ pool: updatedPool })),
-          catchError(error => of(AdminActions.updatePoolFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  deletePool$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.deletePool),
-      switchMap(({ poolId }) =>
-        this.adminService.deletePool(poolId).pipe(
-          map(() => AdminActions.deletePoolSuccess({ poolId })),
-          catchError(error => of(AdminActions.deletePoolFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  loadPoolStats$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.loadPoolStats),
-      switchMap(({ poolId }) =>
-        this.adminService.getPoolStats(poolId).pipe(
-          map(stats => AdminActions.loadPoolStatsSuccess({ poolId, stats })),
-          catchError(error => of(AdminActions.loadPoolStatsFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  validateAllPlayersPresent$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.validateAllPlayersPresent),
-      switchMap(({ poolId }) =>
-        this.adminService.validateAllPlayersPresent(poolId).pipe(
-          map(() => AdminActions.validateAllPlayersPresentSuccess({ poolId })),
-          catchError(error => of(AdminActions.validateAllPlayersPresentFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  endPool$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.endPool),
-      switchMap(({ poolId }) =>
-        this.adminService.endPool(poolId).pipe(
-          map(() => AdminActions.endPoolSuccess({ poolId })),
-          catchError(error => of(AdminActions.endPoolFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
   // Dashboard Effects
   loadDashboardStats$ = createEffect(() =>
     this.actions$.pipe(
@@ -266,32 +181,6 @@ export class AdminEffects {
         this.adminService.getDashboardStats().pipe(
           map(stats => AdminActions.loadDashboardStatsSuccess({ stats })),
           catchError(error => of(AdminActions.loadDashboardStatsFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  // Group Management Effects
-  updatePlayerGroup$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.updatePlayerGroup),
-      switchMap(({ poolId, playerId, newGroupId }) =>
-        this.adminService.updatePlayerGroup(poolId, playerId, newGroupId).pipe(
-          map(() => AdminActions.updatePlayerGroupSuccess({ poolId, playerId, newGroupId })),
-          catchError(error => of(AdminActions.updatePlayerGroupFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  // Referent Management Effects
-  assignReferent$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.assignReferent),
-      switchMap(({ poolId, referentId }) =>
-        this.adminService.assignReferent(poolId, referentId).pipe(
-          map(() => AdminActions.assignReferentSuccess({ poolId, referentId })),
-          catchError(error => of(AdminActions.assignReferentFailure({ error: error.message })))
         )
       )
     )
@@ -307,20 +196,6 @@ export class AdminEffects {
           catchError(error => of(AdminActions.generateRecoveryQRFailure({ error: error.message })))
         )
       )
-    )
-  );
-
-  // Auto-load data when admin logs in
-  loadInitialData$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.loginAdminSuccess),
-      switchMap(() => [
-        AdminActions.loadSites(),
-        AdminActions.loadActivities(),
-        // AdminActions.loadEvents(), // Temporarily commented - endpoint returns 404
-        AdminActions.loadPools(),
-        AdminActions.loadDashboardStats()
-      ])
     )
   );
 
