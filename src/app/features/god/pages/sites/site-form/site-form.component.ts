@@ -2,11 +2,13 @@ import { Component, Input, OnChanges, Output, EventEmitter, SimpleChanges } from
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Site } from '../../../../../models';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-god-site-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule],
   templateUrl: './site-form.component.html',
   styleUrls: ['./site-form.component.css']
 })

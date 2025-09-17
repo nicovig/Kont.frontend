@@ -1,10 +1,20 @@
 <div class="list-card">
   <div class="header">
     <h2 class="title-lg">Abonnements</h2>
-    <a class="add" routerLink="/god/subscriptions/new">Ajouter</a>
+  </div>
+  <div class="toolbar">
+    <mat-form-field appearance="fill" class="filter">
+      <mat-label>Rechercher</mat-label>
+      <input matInput [value]="query" (input)="applyFilter($any($event.target).value)" placeholder="Type, administrateur..." />
+    </mat-form-field>
   </div>
 
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z1 table">
+    <ng-container matColumnDef="administrator">
+      <th mat-header-cell *matHeaderCellDef> Administrateur </th>
+      <td mat-cell *matCellDef="let s"> {{ s.administrator.firstname }} {{ s.administrator.lastname }} </td>
+    </ng-container>
+
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef> Type </th>
       <td mat-cell *matCellDef="let s"> {{ s.subscriptionType }} </td>
@@ -23,8 +33,8 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let s">
-        <a mat-button color="primary" [routerLink]="['/god/subscriptions', s.id]">Détails</a>
-        <button mat-button color="warn" (click)="confirmDelete(s.id)">Supprimer</button>
+        <a mat-raised-button color="primary" [routerLink]="['/god/subscriptions', s.id]">Détails</a>
+        <button mat-raised-button color="warn" (click)="confirmDelete(s.id)">Supprimer</button>
       </td>
     </ng-container>
 

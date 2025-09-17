@@ -1,72 +1,13 @@
 <div class="activities-container">
   <!-- Liste des activités -->
   <div *ngIf="currentView === 'list'">
-    <div class="activities-header">
-      <h1>Gestion des Activités</h1>
-      <button class="btn btn-primary" (click)="showCreateForm()">
-        Créer une Activité
-      </button>
-    </div>
-
-    <div class="activities-grid" *ngIf="activities$ | async as activities">
-      <div class="activity-card" *ngFor="let activity of activities">
-        <div class="activity-header">
-          <h3>{{ activity.name }}</h3>
-          <span 
-            class="activity-status"
-            [ngClass]="getActivityStatus(activity).class"
-          >
-            {{ getActivityStatus(activity).text }}
-          </span>
-        </div>
-        
-        <div class="activity-content">
-          <p class="activity-description" *ngIf="activity.description">
-            {{ activity.description }}
-          </p>
-          
-          <div class="activity-stats">
-            <div class="stat">
-              <span class="stat-label">Site :</span>
-              <span class="stat-value">{{ activity.site.name }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Métriques :</span>
-              <span class="stat-value">{{ getScoringMetricsCount(activity) }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Créée le :</span>
-              <span class="stat-value">{{ formatDate(activity.createdAt) }}</span>
-            </div>
-          </div>
-
-          <div class="activity-actions">
-            <button class="btn btn-sm btn-outline" (click)="showActivityDetail(activity)">
-              Voir détails
-            </button>
-            <button class="btn btn-sm btn-secondary" (click)="showEditForm(activity)">
-              Modifier
-            </button>
-            <button class="btn btn-sm btn-danger" (click)="deleteActivity(activity.id)">
-              Supprimer
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="empty-state" *ngIf="(activities$ | async)?.length === 0">
-      <div class="empty-icon">🎯</div>
-      <h3>Aucune activité trouvée</h3>
-      <p>Créez votre première activité pour commencer à organiser des événements.</p>
-      <button class="btn btn-primary" (click)="showCreateForm()">
-        Créer une Activité
-      </button>
-    </div>
-
-    <div class="loading-overlay" *ngIf="activitiesLoading$ | async">
-      <div class="spinner"></div>
-    </div>
+    <app-activities-list
+      [activities]="(activities$ | async) || []"
+      [loading]="(activitiesLoading$ | async) || false"
+      [error]="activitiesError$ | async"
+      (delete)="deleteActivity($event)"
+      (open)="onActivityOpen($event)">
+    </app-activities-list>
   </div>
 
   <!-- Formulaire de création -->

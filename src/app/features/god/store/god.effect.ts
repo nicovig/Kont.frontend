@@ -17,7 +17,7 @@ export class GodEffects {
       ofType(GodActions.loginGod),
       exhaustMap(({ email, password }) =>
         this.godService.login(email, password).pipe(
-          map(god => GodActions.loginGodSuccess({ god })),
+          map(jwtResponse => GodActions.loginGodSuccess({ jwtResponse })),
           catchError(error => of(GodActions.loginGodFailure({ error: error.message })))
         )
       )
@@ -28,7 +28,18 @@ export class GodEffects {
     () =>
       this.actions$.pipe(
         ofType(GodActions.loginGodSuccess),
-        tap(() => this.router.navigateByUrl('/god/dashboard'))
+        tap(({ jwtResponse }) => {
+          // Stocker le token JWT
+          localStorage.setItem('token', jwtResponse.token);
+          localStorage.setItem('user', JSON.stringify({
+            id: jwtResponse.userId,
+            email: jwtResponse.email,
+            firstname: jwtResponse.firstname,
+            lastname: jwtResponse.lastname,
+            role: jwtResponse.role
+          }));
+          this.router.navigateByUrl('/god/dashboard');
+        })
       ),
     { dispatch: false }
   );

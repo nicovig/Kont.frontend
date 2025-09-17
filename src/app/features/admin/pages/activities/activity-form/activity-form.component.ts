@@ -1,147 +1,159 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Store } from '@ngrx/store';
-import { Observable, Subject, takeUntil } from 'rxjs';
-import { Activity, Site, ScoringMetric } from '../../../../../models';
+import { Observable } from 'rxjs';
+import { Activity, Site } from '../../../../../models';
 import { AdminState } from '../../../store/admin.state';
 import * as AdminActions from '../../../store/admin.actions';
 import * as AdminSelectors from '../../../store/admin.selectors';
+import { CreateActivityRequest, UpdateActivityRequest, CreateScoringMetricRequest } from '../../../services/request-models/activity.models';
 
 @Component({
   selector: 'app-activity-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatSlideToggleModule],
   templateUrl: './activity-form.component.html',
   styleUrls: ['./activity-form.component.css']
 })
-export class ActivityFormComponent implements OnInit, OnDestroy {
-  private readonly destroy$ = new Subject<void>();
+export class ActivityFormComponent implements OnInit {
+  private readonly store = inject(Store<{ admin: AdminState }>);
 
   @Input() activity: Activity | null = null;
   @Input() isEditMode = false;
-  @Output() formSubmitted = new EventEmitter<Activity>();
+  @Output() formSubmitted = new EventEmitter<void>();
   @Output() formCancelled = new EventEmitter<void>();
 
-  activityForm: FormGroup;
+  activityData: Partial<Activity> = {};
+  scoringMetrics: CreateScoringMetricRequest[] = [];
   sites$: Observable<Site[]>;
-  sitesLoading$: Observable<boolean>;
-  formLoading$: Observable<boolean>;
-  formError$: Observable<string | null>;
+  loading = false;
+  error: string | null = null;
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly store: Store<{ admin: AdminState }>
-  ) {
-    this.activityForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      description: [''],
-      siteId: ['', Validators.required],
-      scoringMetrics: this.fb.array([])
-    });
-
+  constructor() {
     this.sites$ = this.store.select(AdminSelectors.selectSites);
-    this.sitesLoading$ = this.store.select(AdminSelectors.selectSitesLoading);
-    this.formLoading$ = this.store.select(AdminSelectors.selectActivitiesLoading);
-    this.formError$ = this.store.select(AdminSelectors.selectActivitiesError);
   }
 
   ngOnInit(): void {
-    this.store.dispatch(AdminActions.loadSites());
-    
     if (this.isEditMode && this.activity) {
-      this.populateForm();
+      this.activityData = { ...this.activity };
+      this.scoringMetrics = (this.activity.scoringMetrics || []).map(sm => ({
+        name: sm.name,
+        unit: sm.unit,
+        higherIsBetter: sm.higherIsBetter,
+        coefficient: sm.coefficient,
+      }));
+    } else {
+      this.activityData = {
+        name: '',
+        description: ''
+      };
+      this.scoringMetrics = [{ name: '', unit: '', higherIsBetter: true, coefficient: 1 }];
+    }
+  }
+
+  onSave() {
+    this.error = this.getValidationError();
+    if (this.error) return;
+
+    this.loading = true;
+
+    if (this.isEditMode && this.activity) {
+      this.store.dispatch(AdminActions.updateActivity({ 
+        activity: { 
+          ...this.activity, 
+          ...this.activityData,
+          scoringMetrics: this.scoringMetrics
+        } as UpdateActivityRequest 
+      }));
+    } else {
+      this.store.dispatch(AdminActions.createActivity({ 
+        activity: { 
+          ...(this.activityData as any),
+          scoringMetrics: this.scoringMetrics
+        } as CreateActivityRequest 
+      }));
     }
 
-    // Écouter les erreurs de formulaire
-    this.formError$.pipe(takeUntil(this.destroy$)).subscribe(error => {
-      if (error) {
-        console.error('Erreur lors de la soumission:', error);
+    // Écouter le succès/échec
+    this.store.select(AdminSelectors.selectActivitiesLoading).subscribe(loading => {
+      if (!loading) {
+        this.store.select(AdminSelectors.selectActivitiesError).subscribe(error => {
+          if (error) {
+            this.error = error;
+            this.loading = false;
+          } else {
+            this.formSubmitted.emit();
+          }
+        });
       }
     });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private populateForm(): void {
-    if (this.activity) {
-      this.activityForm.patchValue({
-        name: this.activity.name,
-        description: this.activity.description || '',
-        siteId: this.activity.site.id
-      });
-    }
-  }
-
-  onSubmit(): void {
-    if (this.activityForm.valid) {
-      const formValue = this.activityForm.value;
-      
-      const activityData: Omit<Activity, 'id' | 'createdAt'> = {
-        name: formValue.name,
-        description: formValue.description,
-        site: { id: formValue.siteId } as Site,
-        scoringMetrics: formValue.scoringMetrics || [],
-        createdBy: {} as any // Sera rempli par le backend
-      };
-
-      if (this.isEditMode && this.activity) {
-        const updatedActivity: Activity = {
-          ...this.activity,
-          ...activityData
-        };
-        this.store.dispatch(AdminActions.updateActivity({ activity: updatedActivity }));
-      } else {
-        this.store.dispatch(AdminActions.createActivity({ activity: activityData }));
-      }
-
-      // Écouter le succès de l'opération
-      this.store.select(AdminSelectors.selectActivitiesLoading)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(loading => {
-          if (!loading) {
-            // Vérifier s'il y a une erreur
-            this.formError$.pipe(takeUntil(this.destroy$)).subscribe(error => {
-              if (!error) {
-                this.formSubmitted.emit();
-              }
-            });
-          }
-        });
-    } else {
-      this.markFormGroupTouched();
-    }
-  }
-
-  onCancel(): void {
+  onCancel() {
     this.formCancelled.emit();
   }
 
-  private markFormGroupTouched(): void {
-    Object.keys(this.activityForm.controls).forEach(key => {
-      const control = this.activityForm.get(key);
-      control?.markAsTouched();
-    });
+  addMetric() {
+    this.scoringMetrics = [
+      ...this.scoringMetrics,
+      { name: '', unit: '', higherIsBetter: true, coefficient: 1 }
+    ];
   }
 
-  getFieldError(fieldName: string): string {
-    const field = this.activityForm.get(fieldName);
-    if (field?.errors && field.touched) {
-      if (field.errors['required']) {
-        return `${fieldName} est requis`;
+  removeMetric(index: number) {
+    if (this.scoringMetrics.length <= 1) return;
+    this.scoringMetrics = this.scoringMetrics.filter((_, i) => i !== index);
+  }
+
+  updateMetricName(index: number, value: string) {
+    this.scoringMetrics[index].name = value;
+  }
+
+  updateMetricUnit(index: number, value: string) {
+    this.scoringMetrics[index].unit = value;
+  }
+
+  toggleHigherIsBetter(index: number, value: boolean) {
+    this.scoringMetrics[index].higherIsBetter = value;
+  }
+
+  updateMetricCoefficient(index: number, value: number) {
+    let v = Number(value);
+    if (Number.isNaN(v)) v = 0;
+    if (v < 0) v = 0;
+    if (v > 1) v = 1;
+    this.scoringMetrics[index].coefficient = v;
+  }
+
+  coeffSum(): number {
+    return this.scoringMetrics.reduce((acc, m) => acc + (Number(m.coefficient) || 0), 0);
+  }
+
+  getValidationError(): string | null {
+    if (!this.activityData.name || !this.activityData.site) {
+      return 'Nom et site sont requis.';
+    }
+    if (!this.scoringMetrics.length) {
+      return 'Ajoutez au moins une métrique.';
+    }
+    for (const m of this.scoringMetrics) {
+      if (!m.name || m.coefficient == null) {
+        return 'Chaque métrique doit avoir un nom et un coefficient.';
       }
-      if (field.errors['minlength']) {
-        return `${fieldName} doit contenir au moins ${field.errors['minlength'].requiredLength} caractères`;
+      const c = Number(m.coefficient);
+      if (Number.isNaN(c) || c < 0 || c > 1) {
+        return 'Le coefficient doit être compris entre 0 et 1.';
       }
     }
-    return '';
-  }
-
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.activityForm.get(fieldName);
-    return !!(field?.invalid && field.touched);
+    if (Math.abs(this.coeffSum() - 1) > 1e-6) {
+      return 'La somme des coefficients doit être exactement 1.';
+    }
+    return null;
   }
 }

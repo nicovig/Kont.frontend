@@ -1,0 +1,15 @@
+<header class="hero">
+  <div class="hero-inner">
+    <nav class="menu">
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="item">Dashboard</a>
+      <a routerLink="/admin/activities" routerLinkActive="active" class="item">Activités</a>
+      <a routerLink="/admin/events" routerLinkActive="active" class="item">Événements</a>
+    </nav>
+    <div class="user-actions">
+      <button mat-raised-button color="warn" (click)="logout()">Déconnexion</button>
+    </div>
+  </div>
+</header>
+<main class="content">
+  <router-outlet></router-outlet>
+</main>

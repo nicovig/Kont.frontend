@@ -1,10 +1,10 @@
 <div class="list-card">
   <div class="header">
     <h2 class="title-lg">Liste</h2>
-    <a class="add" routerLink="/god/administrators/new">Ajouter</a>
+    <a mat-raised-button color="primary" routerLink="/god/administrators/new">Ajouter</a>
   </div>
   <div class="toolbar">
-    <mat-form-field class="filter">
+    <mat-form-field class="filter" appearance="fill">
       <mat-label>Rechercher</mat-label>
       <input matInput [value]="query" (input)="applyFilter($any($event.target).value)" placeholder="Nom, email..." />
     </mat-form-field>
@@ -31,11 +31,21 @@
       <td mat-cell *matCellDef="let a"> {{ a.role?.roleType }} </td>
     </ng-container>
 
+    <ng-container matColumnDef="sites">
+      <th mat-header-cell *matHeaderCellDef> Sites </th>
+      <td mat-cell *matCellDef="let a"> {{ getSitesLabel(a) }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="active">
+      <th mat-header-cell *matHeaderCellDef> Actif </th>
+      <td mat-cell *matCellDef="let a"> {{ a.isActive ? 'Oui' : 'Non' }} </td>
+    </ng-container>
+
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let a">
-        <a mat-button color="primary" [routerLink]="['/god/administrators', a.id]">Détails</a>
-        <button mat-button color="warn" (click)="confirmDelete(a.id)">Supprimer</button>
+        <a mat-raised-button color="primary" [routerLink]="['/god/administrators', a.id]">Détails</a>
+        <button mat-raised-button color="warn" (click)="confirmDelete(a.id)">Supprimer</button>
       </td>
     </ng-container>
 

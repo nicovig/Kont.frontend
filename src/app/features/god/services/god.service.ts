@@ -1,15 +1,17 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Administrator } from '../../../models';
+import { Administrator, Site, SubscriptionType, JwtResponse } from '../../../models';
 import { ApiHttpService } from '../../../core/services/api-http.service';
-import { Site } from '../../../models';
+import { CreateAdministratorRequest } from './request-models/administrator.model';
+
+
 
 @Injectable({ providedIn: 'root' })
 export class GodService {
   private readonly http = inject(ApiHttpService);
 
-  login(email: string, password: string): Observable<Administrator> {
-    return this.http.post<Administrator>(`/god`, { email, password });
+  login(email: string, password: string): Observable<JwtResponse> {
+    return this.http.post<JwtResponse>(`/auth`, { email, password });
   }
 
   getSites(): Observable<Site[]> {
@@ -40,7 +42,7 @@ export class GodService {
     return this.http.get<Administrator>(`/administrators/${id}`);
   }
 
-  createAdministrator(admin: Omit<Administrator, 'id' | 'createdAt'>): Observable<Administrator> {
+  createAdministrator(admin: CreateAdministratorRequest): Observable<Administrator> {
     return this.http.post<Administrator>(`/administrators`, admin);
   }
 
@@ -50,6 +52,10 @@ export class GodService {
 
   deleteAdministrator(id: string): Observable<void> {
     return this.http.delete<void>(`/administrators/${id}`);
+  }
+
+  getAdministratorRoles(): Observable<import('../../../models').Role[]> {
+    return this.http.get<import('../../../models').Role[]>(`/administrators/roles`);
   }
 
   // Subscriptions

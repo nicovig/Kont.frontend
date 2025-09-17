@@ -1,102 +1,60 @@
-<div class="activity-form-container">
-  <div class="form-header">
-    <h2>{{ isEditMode ? 'Modifier l\'activité' : 'Créer une nouvelle activité' }}</h2>
-    <button type="button" class="btn btn-secondary" (click)="onCancel()">
-      Annuler
-    </button>
-  </div>
-
-  <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" class="activity-form">
-    <div class="form-group">
-      <label for="name" class="form-label">
-        Nom de l'activité <span class="required">*</span>
-      </label>
-      <input
-        type="text"
-        id="name"
-        formControlName="name"
-        class="form-control"
-        [class.is-invalid]="isFieldInvalid('name')"
-        placeholder="Entrez le nom de l'activité"
-      />
-      <div class="invalid-feedback" *ngIf="isFieldInvalid('name')">
-        {{ getFieldError('name') }}
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="description" class="form-label">Description</label>
-      <textarea
-        id="description"
-        formControlName="description"
-        class="form-control"
-        rows="4"
-        placeholder="Décrivez l'activité (optionnel)"
-      ></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="siteId" class="form-label">
-        Site <span class="required">*</span>
-      </label>
-      <select
-        id="siteId"
-        formControlName="siteId"
-        class="form-control"
-        [class.is-invalid]="isFieldInvalid('siteId')"
-      >
-        <option value="">Sélectionnez un site</option>
-        <option 
-          *ngFor="let site of sites$ | async" 
-          [value]="site.id"
-        >
-          {{ site.name }}
-        </option>
-      </select>
-      <div class="invalid-feedback" *ngIf="isFieldInvalid('siteId')">
-        {{ getFieldError('siteId') }}
-      </div>
-      <div class="form-text" *ngIf="sitesLoading$ | async">
-        Chargement des sites...
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Métriques de scoring</label>
-      <div class="scoring-metrics-section">
-        <p class="form-text">
-          Les métriques de scoring peuvent être ajoutées après la création de l'activité.
-        </p>
-        <div class="metrics-placeholder">
-          <span class="metrics-icon">📊</span>
-          <span>Métriques à configurer</span>
+<div class="wrap">
+  <div class="content">
+    <div class="card">
+      <h2 class="title-lg">{{ isEditMode ? 'Modifier une activité' : 'Créer une activité' }}</h2>
+      <form (submit)="$event.preventDefault()" novalidate>
+        <div class="row">
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Nom</mat-label>
+            <input matInput [(ngModel)]="activityData.name" name="name" required />
+          </mat-form-field>
         </div>
-      </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Description</mat-label>
+            <textarea matInput [(ngModel)]="activityData.description" name="description" rows="3"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="row metrics">
+          <h3>Métriques</h3>
+          <p>Définissez une ou plusieurs métriques qui serviront au calcul des scores. La somme des coefficients doit être égale à 1.</p>
+          <div *ngFor="let metric of scoringMetrics; let i = index" class="metric-row">
+            <mat-form-field appearance="fill" class="w-30">
+              <mat-label>Nom</mat-label>
+              <input matInput [(ngModel)]="metric.name" name="metric-name-{{i}}" required />
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="w-20">
+              <mat-label>Unité</mat-label>
+              <input matInput [(ngModel)]="metric.unit" name="metric-unit-{{i}}" />
+            </mat-form-field>
+            <mat-slide-toggle [checked]="metric.higherIsBetter" (change)="toggleHigherIsBetter(i, $event.checked)" name="metric-hib-{{i}}">
+              Plus haut est meilleur
+            </mat-slide-toggle>
+            <mat-form-field appearance="fill" class="w-20">
+              <mat-label>Coefficient</mat-label>
+              <input matInput type="number" inputmode="decimal" step="0.01" min="0" max="1" [(ngModel)]="metric.coefficient" (ngModelChange)="updateMetricCoefficient(i, $event)" name="metric-coef-{{i}}" />
+            </mat-form-field>
+            <button mat-button color="warn" type="button" (click)="removeMetric(i)">Supprimer</button>
+          </div>
+          <div class="metric-actions">
+            <button mat-stroked-button color="primary" type="button" (click)="addMetric()">Ajouter une métrique</button>
+          </div>
+          <div class="error" *ngIf="coeffSum() !== 1">La somme des coefficients doit être égale à 1 (actuelle: {{ coeffSum() | number:'1.2-2' }}).</div>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Site</mat-label>
+            <mat-select [(ngModel)]="activityData.site" name="site" required>
+              <mat-option *ngFor="let site of sites$ | async" [value]="site">{{ site.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <button mat-raised-button color="primary" (click)="onSave()" [disabled]="loading || getValidationError()">
+          {{ isEditMode ? 'Modifier' : 'Créer' }}
+        </button>
+        <button mat-button (click)="onCancel()">Annuler</button>
+        <div class="error" *ngIf="getValidationError() as err">{{ err }}</div>
+      </form>
     </div>
-
-    <div class="form-actions">
-      <button 
-        type="submit" 
-        class="btn btn-primary"
-        [disabled]="activityForm.invalid || (formLoading$ | async)"
-      >
-        <span *ngIf="formLoading$ | async" class="spinner"></span>
-        {{ isEditMode ? 'Mettre à jour' : 'Créer l\'activité' }}
-      </button>
-      <button 
-        type="button" 
-        class="btn btn-secondary"
-        (click)="onCancel()"
-        [disabled]="formLoading$ | async"
-      >
-        Annuler
-      </button>
-    </div>
-
-    <div class="form-error" *ngIf="formError$ | async as error">
-      <div class="alert alert-danger">
-        <strong>Erreur :</strong> {{ error }}
-      </div>
-    </div>
-  </form>
+  </div>
 </div>

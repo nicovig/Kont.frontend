@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Administrator, Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData } from '../../../models';
+import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse } from '../../../models';
 import { PoolStats, DashboardStats, RecentActivity } from '../store/admin.state';
 import { ApiHttpService } from '../../../core/services/api-http.service';
+import { CreateActivityRequest, UpdateActivityRequest } from './request-models/activity.models';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,8 @@ export class AdminService {
   private readonly http = inject(ApiHttpService);
 
   // Auth
-  login(email: string, password: string): Observable<Administrator> {
-    return this.http.post<Administrator>(`/auth`, { email, password });
+  login(email: string, password: string): Observable<JwtResponse> {
+    return this.http.post<JwtResponse>(`/auth`, { email, password });
   }
 
   // Sites
@@ -42,11 +43,11 @@ export class AdminService {
     return this.http.get<Activity>(`/activities/${activityId}`);
   }
 
-  createActivity(activity: Omit<Activity, 'id' | 'createdAt'>): Observable<Activity> {
+  createActivity(activity: CreateActivityRequest): Observable<Activity> {
     return this.http.post<Activity>(`/activities`, activity);
   }
 
-  updateActivity(activity: Activity): Observable<Activity> {
+  updateActivity(activity: UpdateActivityRequest): Observable<Activity> {
     return this.http.put<Activity>(`/activities/${activity.id}`, activity);
   }
 

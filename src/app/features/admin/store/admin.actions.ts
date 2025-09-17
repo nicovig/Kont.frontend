@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { Administrator, Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGroup, PlayerGlobalScore, ActivitySummaryData } from '../../../models';
+import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGroup, PlayerGlobalScore, ActivitySummaryData, JwtResponse } from '../../../models';
 import { PoolStats, DashboardStats, RecentActivity } from './admin.state';
+import { CreateActivityRequest, UpdateActivityRequest } from '../services/request-models/activity.models';
 
 // Auth Actions
 export const loginAdmin = createAction(
@@ -10,7 +11,7 @@ export const loginAdmin = createAction(
 
 export const loginAdminSuccess = createAction(
   '[Admin] Login Admin Success',
-  props<{ admin: Administrator }>()
+  props<{ jwtResponse: JwtResponse }>()
 );
 
 export const loginAdminFailure = createAction(
@@ -73,7 +74,7 @@ export const loadActivitiesFailure = createAction(
 
 export const createActivity = createAction(
   '[Admin] Create Activity',
-  props<{ activity: Omit<Activity, 'id' | 'createdAt'> }>()
+  props<{ activity: CreateActivityRequest }>()
 );
 
 export const createActivitySuccess = createAction(
@@ -88,7 +89,7 @@ export const createActivityFailure = createAction(
 
 export const updateActivity = createAction(
   '[Admin] Update Activity',
-  props<{ activity: Activity }>()
+  props<{ activity: UpdateActivityRequest }>()
 );
 
 export const updateActivitySuccess = createAction(

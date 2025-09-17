@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, map, switchMap, exhaustMap, concatMap, mergeMap } from 'rxjs/operators';
+import { catchError, map, switchMap, exhaustMap, concatMap, mergeMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Router } from '@angular/router';
 import { AdminService } from '../services/admin.service';
 import * as AdminActions from './admin.actions';
 
@@ -11,6 +12,7 @@ export class AdminEffects {
   private readonly actions$ = inject(Actions);
   private readonly adminService = inject(AdminService);
   private readonly store = inject(Store);
+  private readonly router = inject(Router);
 
   // Auth Effects
   loginAdmin$ = createEffect(() =>
@@ -18,11 +20,34 @@ export class AdminEffects {
       ofType(AdminActions.loginAdmin),
       exhaustMap(({ email, password }) =>
         this.adminService.login(email, password).pipe(
-          map(admin => AdminActions.loginAdminSuccess({ admin })),
+          map(jwtResponse => AdminActions.loginAdminSuccess({ jwtResponse })),
           catchError(error => of(AdminActions.loginAdminFailure({ error: error.message })))
         )
       )
     )
+  );
+
+  // Redirect to dashboard after successful login
+  navigateOnLoginSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AdminActions.loginAdminSuccess),
+        tap(({ jwtResponse }) => {
+          // Store JWT token
+          localStorage.setItem('token', jwtResponse.token);
+          // Store admin info in localStorage
+          localStorage.setItem('admin', JSON.stringify({
+            id: jwtResponse.userId,
+            email: jwtResponse.email,
+            firstname: jwtResponse.firstname,
+            lastname: jwtResponse.lastname,
+            role: jwtResponse.role
+          }));
+          // Redirect to admin dashboard
+          this.router.navigateByUrl('/admin');
+        })
+      ),
+    { dispatch: false }
   );
 
   // Sites Effects
@@ -268,7 +293,7 @@ export class AdminEffects {
       switchMap(() => [
         AdminActions.loadSites(),
         AdminActions.loadActivities(),
-        AdminActions.loadEvents(),
+        // AdminActions.loadEvents(), // Temporarily commented - endpoint returns 404
         AdminActions.loadPools(),
         AdminActions.loadDashboardStats()
       ])

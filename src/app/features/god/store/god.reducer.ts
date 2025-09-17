@@ -5,7 +5,24 @@ import * as GodActions from './god.action';
 export const godReducer = createReducer(
   initialGodState,
   on(GodActions.loginGod, state => ({ ...state, authLoading: true, authError: null })),
-  on(GodActions.loginGodSuccess, (state, { god }) => ({ ...state, currentGod: god, isAuthenticated: true, authLoading: false })),
+  on(GodActions.loginGodSuccess, (state, { jwtResponse }) => ({ 
+    ...state, 
+    currentGod: {
+      id: jwtResponse.userId,
+      email: jwtResponse.email,
+      firstname: jwtResponse.firstname,
+      lastname: jwtResponse.lastname,
+      password: '',
+      createdAt: new Date(),
+      phoneNumber: '',
+      subscription: {} as any,
+      sites: [],
+      role: { id: '', name: jwtResponse.role } as any,
+      isActive: true
+    }, 
+    isAuthenticated: true, 
+    authLoading: false 
+  })),
   on(GodActions.loginGodFailure, (state, { error }) => ({ ...state, authLoading: false, authError: error })),
   on(GodActions.logoutGod, () => ({ ...initialGodState })),
 

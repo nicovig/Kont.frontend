@@ -6,6 +6,9 @@
       <a routerLink="/god/administrators" routerLinkActive="active" class="item">Administrateurs</a>
       <a routerLink="/god/subscriptions" routerLinkActive="active" class="item">Abonnements</a>
     </nav>
+    <div class="user-actions">
+      <button mat-raised-button color="warn" (click)="logout()">Déconnexion</button>
+    </div>
   </div>
   </header>
   <main class="content">

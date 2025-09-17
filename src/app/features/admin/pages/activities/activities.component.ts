@@ -10,6 +10,7 @@ import * as AdminActions from '../../store/admin.actions';
 import * as AdminSelectors from '../../store/admin.selectors';
 import { ActivityFormComponent } from './activity-form/activity-form.component';
 import { ActivityDetailComponent } from './activity-detail/activity-detail.component';
+import { ActivitiesListComponent } from './activities-list/activities-list.component';
 
 export type ViewMode = 'list' | 'create' | 'edit' | 'detail';
 
@@ -21,7 +22,8 @@ export type ViewMode = 'list' | 'create' | 'edit' | 'detail';
     RouterModule, 
     FormsModule,
     ActivityFormComponent,
-    ActivityDetailComponent
+    ActivityDetailComponent,
+    ActivitiesListComponent
   ],
   templateUrl: './activities.component.html',
   styleUrls: ['./activities.component.css']
@@ -115,8 +117,21 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   // Activity actions
   deleteActivity(activityId: string): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette activité ? Cette action est irréversible.')) {
-      this.store.dispatch(AdminActions.deleteActivity({ activityId }));
+    this.store.dispatch(AdminActions.deleteActivity({ activityId }));
+  }
+
+  // List component event handlers
+  onActivityOpen(activityId: string): void {
+    if (activityId === 'new') {
+      this.showCreateForm();
+    } else {
+      // Trouver l'activité par ID
+      this.activities$.pipe(takeUntil(this.destroy$)).subscribe(activities => {
+        const activity = activities.find(a => a.id === activityId);
+        if (activity) {
+          this.showActivityDetail(activity);
+        }
+      });
     }
   }
 

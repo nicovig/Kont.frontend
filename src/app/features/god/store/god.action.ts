@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
-import { Administrator } from '../../../models';
+import { Administrator, JwtResponse } from '../../../models';
+import { CreateAdministratorRequest } from '../services/request-models/administrator.model';
 
 export const loginGod = createAction(
   '[God] Login',
@@ -8,7 +9,7 @@ export const loginGod = createAction(
 
 export const loginGodSuccess = createAction(
   '[God] Login Success',
-  props<{ god: Administrator }>()
+  props<{ jwtResponse: JwtResponse }>()
 );
 
 export const loginGodFailure = createAction(
@@ -23,7 +24,7 @@ export const loadAdministrators = createAction('[God] Load Administrators');
 export const loadAdministratorsSuccess = createAction('[God] Load Administrators Success', props<{ administrators: Administrator[] }>());
 export const loadAdministratorsFailure = createAction('[God] Load Administrators Failure', props<{ error: string }>());
 
-export const createAdministrator = createAction('[God] Create Administrator', props<{ admin: Omit<Administrator, 'id' | 'createdAt'> }>());
+export const createAdministrator = createAction('[God] Create Administrator', props<{ admin: CreateAdministratorRequest }>());
 export const createAdministratorSuccess = createAction('[God] Create Administrator Success', props<{ admin: Administrator }>());
 export const createAdministratorFailure = createAction('[God] Create Administrator Failure', props<{ error: string }>());
 

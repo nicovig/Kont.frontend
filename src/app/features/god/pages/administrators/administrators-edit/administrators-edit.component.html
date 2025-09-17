@@ -5,29 +5,66 @@
       <form (submit)="$event.preventDefault()" novalidate>
         <div class="row2">
           <div>
-            <label>Prénom *</label>
-            <input [(ngModel)]="admin.firstname" name="firstname" required />
+            <mat-form-field appearance="fill" class="w-100">
+              <mat-label>Prénom</mat-label>
+              <input matInput [(ngModel)]="admin.firstname" name="firstname" required />
+            </mat-form-field>
           </div>
           <div>
-            <label>Nom *</label>
-            <input [(ngModel)]="admin.lastname" name="lastname" required />
+            <mat-form-field appearance="fill" class="w-100">
+              <mat-label>Nom</mat-label>
+              <input matInput [(ngModel)]="admin.lastname" name="lastname" required />
+            </mat-form-field>
           </div>
         </div>
         <div class="row2">
           <div>
-            <label>Email *</label>
-            <input [(ngModel)]="admin.email" name="email" required />
+            <mat-form-field appearance="fill" class="w-100">
+              <mat-label>Email</mat-label>
+              <input matInput [(ngModel)]="admin.email" name="email" required />
+            </mat-form-field>
           </div>
           <div>
-            <label>Téléphone *</label>
-            <input [(ngModel)]="admin.phoneNumber" name="phoneNumber" required />
+            <mat-form-field appearance="fill" class="w-100">
+              <mat-label>Téléphone</mat-label>
+              <input matInput [(ngModel)]="admin.phoneNumber" name="phoneNumber" required />
+            </mat-form-field>
           </div>
         </div>
         <div class="row">
-          <label>Mot de passe *</label>
-          <input type="password" [(ngModel)]="admin.password" name="password" required />
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Mot de passe {{ isNew ? '*' : '(laisser vide pour ne pas changer)' }}</mat-label>
+            <input matInput type="password" [(ngModel)]="admin.password" name="password" [required]="isNew" />
+          </mat-form-field>
         </div>
-        <button class="primary" (click)="onSave()" [disabled]="loading">{{ isNew ? 'Créer' : 'Modifier' }}</button>
+        <div class="row2">
+          <div>
+            <mat-form-field appearance="fill" class="w-100">
+              <mat-label>Rôle</mat-label>
+              <mat-select [value]="admin.role?.id" (selectionChange)="setRole($event.value)" required>
+                <mat-option *ngFor="let r of roles" [value]="r.id">{{ r.roleType }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-slide-toggle [(ngModel)]="admin.isActive" name="isActive">Actif</mat-slide-toggle>
+          </div>
+        </div>
+        <div class="row" *ngIf="isNew">
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Type d'abonnement</mat-label>
+            <mat-select [(value)]="selectedSubscriptionType">
+              <mat-option *ngFor="let type of subscriptionTypes" [value]="type">{{ type }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <label>Sites</label>
+          <div class="chips">
+            <mat-checkbox *ngFor="let s of sites" [checked]="hasSite(s)" (change)="toggleSite(s, $event.checked)" class="mr-8">{{ s.name }}</mat-checkbox>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" (click)="onSave()" [disabled]="loading">{{ isNew ? 'Créer' : 'Modifier' }}</button>
         <div class="error" *ngIf="error">{{ error }}</div>
       </form>
     </div>

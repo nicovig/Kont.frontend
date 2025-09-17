@@ -16,4 +16,5 @@ export * from './player-group.model';
 export * from './subscription.model';
 export * from './role.model';
 export * from './activity-summary-data.model';
+export * from './jwt-response.model';
 

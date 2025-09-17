@@ -23,7 +23,7 @@ export class GodAdministratorsListComponent {
   @Output() open = new EventEmitter<string>();
 
   query = '';
-  displayedColumns: string[] = ['name', 'email', 'phone', 'role', 'actions'];
+  displayedColumns: string[] = ['name', 'email', 'phone', 'role', 'sites', 'active', 'actions'];
   dataSource = new MatTableDataSource<Administrator>([]);
 
   ngOnChanges() {
@@ -39,7 +39,9 @@ export class GodAdministratorsListComponent {
         (data.firstname?.toLowerCase().includes(q)) ||
         (data.lastname?.toLowerCase().includes(q)) ||
         (data.email?.toLowerCase().includes(q)) ||
-        (data.phoneNumber?.toLowerCase().includes(q))
+        (data.phoneNumber?.toLowerCase().includes(q)) ||
+        (data.role?.roleType?.toLowerCase().includes(q)) ||
+        ((data.sites||[]).some(s => s.name.toLowerCase().includes(q)))
       );
     };
     this.dataSource.filter = value.trim().toLowerCase();
@@ -49,6 +51,11 @@ export class GodAdministratorsListComponent {
     if (confirm('Supprimer cet administrateur ?')) {
       this.delete.emit(id);
     }
+  }
+
+  getSitesLabel(a: Administrator): string {
+    const list = (a.sites || []).map(s => s.name);
+    return list.join(', ');
   }
 }
 
