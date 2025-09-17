@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse } from '../../../models';
+import { CreateEventRequest, UpdateEventRequest } from './request-models/event.models';
 import { PoolStats, DashboardStats, RecentActivity } from '../store/admin.state';
 import { ApiHttpService } from '../../../core/services/api-http.service';
 import { CreateActivityRequest, UpdateActivityRequest } from './request-models/activity.models';
@@ -64,11 +65,11 @@ export class AdminService {
     return this.http.get<Event>(`/events/${eventId}`);
   }
 
-  createEvent(event: Omit<Event, 'id' | 'createdAt'>): Observable<Event> {
+  createEvent(event: CreateEventRequest): Observable<Event> {
     return this.http.post<Event>(`/events`, event);
   }
 
-  updateEvent(event: Event): Observable<Event> {
+  updateEvent(event: UpdateEventRequest): Observable<Event> {
     return this.http.put<Event>(`/events/${event.id}`, event);
   }
 

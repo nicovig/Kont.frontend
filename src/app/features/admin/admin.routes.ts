@@ -24,20 +24,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/events/events.component').then(m => m.EventsComponent)
       },
       {
-        path: 'pools',
-        loadComponent: () => import('./pages/pools/pools.component').then(m => m.PoolsComponent)
+        path: 'events/new',
+        loadComponent: () => import('./pages/events/events.component').then(m => m.EventsComponent)
       },
       {
-        path: 'pools/:id',
-        loadComponent: () => import('./pages/pool-detail/pool-detail.component').then(m => m.PoolDetailComponent)
-      },
-      {
-        path: 'leaderboard',
-        loadComponent: () => import('./pages/leaderboard/leaderboard.component').then(m => m.LeaderboardComponent)
-      },
-      {
-        path: 'settings',
-        loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsComponent)
+        path: 'events/:id',
+        loadComponent: () => import('./pages/events/events.component').then(m => m.EventsComponent)
       }
     ]
   }

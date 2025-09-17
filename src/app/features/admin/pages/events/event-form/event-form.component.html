@@ -1,0 +1,56 @@
+<div class="p-6">
+  <div class="mx-auto max-w-3xl">
+    <div class="rounded-lg bg-white shadow p-6">
+      <h2 class="text-2xl font-semibold mb-6">{{ isEditMode ? 'Modifier un événement' : 'Créer un événement' }}</h2>
+      <form (submit)="$event.preventDefault()" novalidate>
+        <div class="mb-4">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Nom</mat-label>
+            <input matInput [(ngModel)]="form.name" name="name" required />
+          </mat-form-field>
+        </div>
+        <div class="mb-4">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Lien</mat-label>
+            <input matInput [(ngModel)]="form.eventLink" (ngModelChange)="onLinkChange($event)" name="eventLink" required />
+          </mat-form-field>
+        </div>
+        <div class="flex flex-wrap gap-4 mb-4">
+          <mat-form-field appearance="fill" class="w-full md:w-1/3">
+            <mat-label>Début</mat-label>
+            <input matInput [matDatepicker]="dpStart" [(ngModel)]="form.startedAt" name="startedAt" required />
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="dpStart"></mat-datepicker-toggle>
+            <mat-datepicker #dpStart></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="w-full md:w-1/3">
+            <mat-label>Fin</mat-label>
+            <input matInput [matDatepicker]="dpEnd" [(ngModel)]="form.endedAt" name="endedAt" required />
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="dpEnd"></mat-datepicker-toggle>
+            <mat-datepicker #dpEnd></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="w-full md:flex-1">
+            <mat-label>Site</mat-label>
+            <mat-select [(ngModel)]="form.siteId" name="site" required>
+              <mat-option *ngFor="let s of (sites$ | async)" [value]="s.id">{{ s.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="mb-4">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Activités</mat-label>
+            <mat-select [(ngModel)]="form.activityIds" name="activities" multiple>
+              <mat-option *ngFor="let a of (activities$ | async)" [value]="a.id">{{ a.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="mt-6 flex gap-2">
+          <button mat-raised-button color="primary" (click)="save()" [disabled]="getValidationError()">{{ isEditMode ? 'Modifier' : 'Créer' }}</button>
+          <button mat-button (click)="cancel()">Annuler</button>
+        </div>
+        <div class="text-sm text-red-600 mt-2" *ngIf="error">{{ error }}</div>
+      </form>
+    </div>
+  </div>
+</div>

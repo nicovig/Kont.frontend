@@ -26,7 +26,6 @@ export type ViewMode = 'list' | 'create' | 'edit' | 'detail';
     ActivitiesListComponent
   ],
   templateUrl: './activities.component.html',
-  styleUrls: ['./activities.component.css']
 })
 export class ActivitiesComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();

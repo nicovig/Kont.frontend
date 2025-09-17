@@ -13,7 +13,6 @@ import { Activity } from '../../../../../models';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule],
   templateUrl: './activities-list.component.html',
-  styleUrls: ['./activities-list.component.css']
 })
 export class ActivitiesListComponent {
   @Input() activities: Activity[] = [];

@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGroup, PlayerGlobalScore, ActivitySummaryData, JwtResponse } from '../../../models';
 import { PoolStats, DashboardStats, RecentActivity } from './admin.state';
 import { CreateActivityRequest, UpdateActivityRequest } from '../services/request-models/activity.models';
+import { CreateEventRequest, UpdateEventRequest } from '../services/request-models/event.models';
 
 // Auth Actions
 export const loginAdmin = createAction(
@@ -139,7 +140,7 @@ export const loadEventsFailure = createAction(
 
 export const createEvent = createAction(
   '[Admin] Create Event',
-  props<{ event: Omit<Event, 'id' | 'createdAt'> }>()
+  props<{ request: CreateEventRequest }>()
 );
 
 export const createEventSuccess = createAction(
@@ -155,6 +156,36 @@ export const createEventFailure = createAction(
 export const selectEvent = createAction(
   '[Admin] Select Event',
   props<{ event: Event | null }>()
+);
+
+export const updateEvent = createAction(
+  '[Admin] Update Event',
+  props<{ request: UpdateEventRequest }>()
+);
+
+export const updateEventSuccess = createAction(
+  '[Admin] Update Event Success',
+  props<{ event: Event }>()
+);
+
+export const updateEventFailure = createAction(
+  '[Admin] Update Event Failure',
+  props<{ error: string }>()
+);
+
+export const deleteEvent = createAction(
+  '[Admin] Delete Event',
+  props<{ eventId: string }>()
+);
+
+export const deleteEventSuccess = createAction(
+  '[Admin] Delete Event Success',
+  props<{ eventId: string }>()
+);
+
+export const deleteEventFailure = createAction(
+  '[Admin] Delete Event Failure',
+  props<{ error: string }>()
 );
 
 // Pools Actions

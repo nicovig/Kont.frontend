@@ -1,0 +1,34 @@
+<div class="p-6">
+  <div *ngIf="view === 'list'">
+    <app-events-list
+      [events]="(events$ | async) || []"
+      (create)="view='create'"
+      (select)="onSelect($event)">
+    </app-events-list>
+  </div>
+
+  <div *ngIf="view === 'create'">
+    <app-event-form
+      [isEditMode]="false"
+      (saved)="afterSave()"
+      (cancelled)="view='list'">
+    </app-event-form>
+  </div>
+
+  <div *ngIf="view === 'edit' && selectedEvent">
+    <app-event-form
+      [event]="selectedEvent"
+      [isEditMode]="true"
+      (saved)="afterSave()"
+      (cancelled)="view='detail'">
+    </app-event-form>
+  </div>
+
+  <div *ngIf="view === 'detail' && selectedEvent">
+    <app-event-detail
+      [event]="selectedEvent"
+      (editRequested)="edit()"
+      (backToList)="view='list'">
+    </app-event-detail>
+  </div>
+</div>

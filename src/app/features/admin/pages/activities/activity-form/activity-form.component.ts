@@ -6,7 +6,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import { Activity, Site } from '../../../../../models';
 import { AdminState } from '../../../store/admin.state';
@@ -17,12 +19,12 @@ import { CreateActivityRequest, UpdateActivityRequest, CreateScoringMetricReques
 @Component({
   selector: 'app-activity-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatSlideToggleModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatSlideToggleModule, MatIconModule, MatSnackBarModule],
   templateUrl: './activity-form.component.html',
-  styleUrls: ['./activity-form.component.css']
 })
 export class ActivityFormComponent implements OnInit {
   private readonly store = inject(Store<{ admin: AdminState }>);
+  private readonly snackBar = inject(MatSnackBar);
 
   @Input() activity: Activity | null = null;
   @Input() isEditMode = false;
@@ -88,6 +90,12 @@ export class ActivityFormComponent implements OnInit {
             this.error = error;
             this.loading = false;
           } else {
+            const name = this.activityData.name || 'Activité';
+            if (!this.isEditMode) {
+              this.snackBar.open(`${name} a bien été créé`, 'OK', { duration: 3000 });
+            } else {
+              this.snackBar.open(`${name} a bien été modifié`, 'OK', { duration: 3000 });
+            }
             this.formSubmitted.emit();
           }
         });
@@ -109,6 +117,12 @@ export class ActivityFormComponent implements OnInit {
   removeMetric(index: number) {
     if (this.scoringMetrics.length <= 1) return;
     this.scoringMetrics = this.scoringMetrics.filter((_, i) => i !== index);
+  }
+
+  confirmRemove(index: number) {
+    const ok = confirm('Supprimer cette métrique ?');
+    if (!ok) return;
+    this.removeMetric(index);
   }
 
   updateMetricName(index: number, value: string) {
@@ -136,15 +150,15 @@ export class ActivityFormComponent implements OnInit {
   }
 
   getValidationError(): string | null {
-    if (!this.activityData.name || !this.activityData.site) {
-      return 'Nom et site sont requis.';
+    if (!this.activityData.name || !this.activityData.site || !this.activityData.description) {
+      return 'Nom, site, métrique et description sont requis.';
     }
     if (!this.scoringMetrics.length) {
       return 'Ajoutez au moins une métrique.';
     }
     for (const m of this.scoringMetrics) {
-      if (!m.name || m.coefficient == null) {
-        return 'Chaque métrique doit avoir un nom et un coefficient.';
+      if (!m.name || m.coefficient == null || !m.unit) {
+        return 'Chaque métrique doit avoir un nom, une unité et un coefficient.';
       }
       const c = Number(m.coefficient);
       if (Number.isNaN(c) || c < 0 || c > 1) {
@@ -156,4 +170,9 @@ export class ActivityFormComponent implements OnInit {
     }
     return null;
   }
+
+  compareSite = (a: Site | null, b: Site | null) => {
+    if (!a || !b) return a === b;
+    return a.id === b.id;
+  };
 }

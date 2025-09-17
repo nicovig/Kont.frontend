@@ -1,59 +1,70 @@
-<div class="wrap">
-  <div class="content">
-    <div class="card">
-      <h2 class="title-lg">{{ isEditMode ? 'Modifier une activité' : 'Créer une activité' }}</h2>
+<div class="p-6">
+  <div class="mx-auto max-w-3xl">
+    <div class="rounded-lg bg-white shadow p-6">
+      <h2 class="text-2xl font-semibold mb-6">{{ isEditMode ? 'Modifier une activité' : 'Créer une activité' }}</h2>
       <form (submit)="$event.preventDefault()" novalidate>
-        <div class="row">
-          <mat-form-field appearance="fill" class="w-100">
+        <div class="mb-4">
+          <mat-form-field appearance="fill" class="w-full">
             <mat-label>Nom</mat-label>
             <input matInput [(ngModel)]="activityData.name" name="name" required />
           </mat-form-field>
         </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="w-100">
+        <div class="mb-4">
+          <mat-form-field appearance="fill" class="w-full">
             <mat-label>Description</mat-label>
-            <textarea matInput [(ngModel)]="activityData.description" name="description" rows="3"></textarea>
+            <textarea matInput [(ngModel)]="activityData.description" name="description" rows="3" required></textarea>
           </mat-form-field>
         </div>
-        <div class="row metrics">
-          <h3>Métriques</h3>
-          <p>Définissez une ou plusieurs métriques qui serviront au calcul des scores. La somme des coefficients doit être égale à 1.</p>
-          <div *ngFor="let metric of scoringMetrics; let i = index" class="metric-row">
-            <mat-form-field appearance="fill" class="w-30">
-              <mat-label>Nom</mat-label>
-              <input matInput [(ngModel)]="metric.name" name="metric-name-{{i}}" required />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="w-20">
-              <mat-label>Unité</mat-label>
-              <input matInput [(ngModel)]="metric.unit" name="metric-unit-{{i}}" />
-            </mat-form-field>
-            <mat-slide-toggle [checked]="metric.higherIsBetter" (change)="toggleHigherIsBetter(i, $event.checked)" name="metric-hib-{{i}}">
-              Plus haut est meilleur
-            </mat-slide-toggle>
-            <mat-form-field appearance="fill" class="w-20">
-              <mat-label>Coefficient</mat-label>
-              <input matInput type="number" inputmode="decimal" step="0.01" min="0" max="1" [(ngModel)]="metric.coefficient" (ngModelChange)="updateMetricCoefficient(i, $event)" name="metric-coef-{{i}}" />
-            </mat-form-field>
-            <button mat-button color="warn" type="button" (click)="removeMetric(i)">Supprimer</button>
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold">Métriques</h3>
+          <p class="text-gray-600 text-sm mb-4">Définissez une ou plusieurs métriques qui serviront au calcul des scores. La somme des coefficients doit être égale à 1.</p>
+            <div *ngFor="let metric of scoringMetrics; let i = index" class="mb-3">
+            <div class="border pb-4 rounded-md p-4 relative">
+              <button type="button" (click)="confirmRemove(i)" class="absolute right-2 top-2 text-red-600 hover:text-red-700 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50" aria-label="Supprimer">
+                <mat-icon>close</mat-icon>
+              </button>
+              <h6 class="font-semibold">Métrique {{ i + 1 }}</h6>
+              <div class="flex flex-wrap gap-4 pt-2">
+                <mat-form-field appearance="fill" class="w-full md:w-1/3">
+                  <mat-label>Nom</mat-label>
+                  <input matInput [(ngModel)]="metric.name" name="metric-name-{{i}}" required />
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="w-full md:w-1/5" required>
+                  <mat-label>Unité</mat-label>
+                  <input matInput [(ngModel)]="metric.unit" name="metric-unit-{{i}}" required/>
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="w-full md:w-1/5" required>
+                  <mat-label>Coefficient</mat-label>
+                  <input matInput type="number" inputmode="decimal" step="0.01" min="0" max="1" [(ngModel)]="metric.coefficient" (ngModelChange)="updateMetricCoefficient(i, $event)" name="metric-coef-{{i}}" required/>
+                </mat-form-field>
+              </div>            
+              <div class="mt-2 flex items-center gap-4">
+                <mat-slide-toggle [checked]="metric.higherIsBetter" (change)="toggleHigherIsBetter(i, $event.checked)" name="metric-hib-{{i}}">
+                  Plus haut est meilleur
+                </mat-slide-toggle>
+              </div>
+            </div>
           </div>
-          <div class="metric-actions">
+          <div class="mt-2">
             <button mat-stroked-button color="primary" type="button" (click)="addMetric()">Ajouter une métrique</button>
           </div>
-          <div class="error" *ngIf="coeffSum() !== 1">La somme des coefficients doit être égale à 1 (actuelle: {{ coeffSum() | number:'1.2-2' }}).</div>
+          <div class="text-sm text-red-600 mt-2" *ngIf="coeffSum() !== 1">La somme des coefficients doit être égale à 1 (actuelle: {{ coeffSum() | number:'1.2-2' }}).</div>
         </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="w-100">
+        <div class="mt-6">
+          <mat-form-field appearance="fill" class="w-full">
             <mat-label>Site</mat-label>
-            <mat-select [(ngModel)]="activityData.site" name="site" required>
+            <mat-select [(ngModel)]="activityData.site" name="site" required [compareWith]="compareSite">
               <mat-option *ngFor="let site of sites$ | async" [value]="site">{{ site.name }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
-        <button mat-raised-button color="primary" (click)="onSave()" [disabled]="loading || getValidationError()">
-          {{ isEditMode ? 'Modifier' : 'Créer' }}
-        </button>
-        <button mat-button (click)="onCancel()">Annuler</button>
-        <div class="error" *ngIf="getValidationError() as err">{{ err }}</div>
+        <div class="mt-6 flex gap-2">
+          <button mat-raised-button color="primary" (click)="onSave()" [disabled]="loading || getValidationError()">
+            {{ isEditMode ? 'Modifier' : 'Créer' }}
+          </button>
+          <button mat-button (click)="onCancel()">Annuler</button>
+        </div>
+        <div class="text-sm text-red-600 mt-2" *ngIf="getValidationError() as err">{{ err }}</div>
       </form>
     </div>
   </div>

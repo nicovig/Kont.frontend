@@ -140,10 +140,34 @@ export class AdminEffects {
   createEvent$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.createEvent),
-      switchMap(({ event }) =>
-        this.adminService.createEvent(event).pipe(
+      switchMap(({ request }) =>
+        this.adminService.createEvent(request).pipe(
           map(createdEvent => AdminActions.createEventSuccess({ event: createdEvent })),
           catchError(error => of(AdminActions.createEventFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  updateEvent$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.updateEvent),
+      switchMap(({ request }) =>
+        this.adminService.updateEvent(request).pipe(
+          map(event => AdminActions.updateEventSuccess({ event })),
+          catchError(error => of(AdminActions.updateEventFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  deleteEvent$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.deleteEvent),
+      switchMap(({ eventId }) =>
+        this.adminService.deleteEvent(eventId).pipe(
+          map(() => AdminActions.deleteEventSuccess({ eventId })),
+          catchError(error => of(AdminActions.deleteEventFailure({ error: error.message })))
         )
       )
     )

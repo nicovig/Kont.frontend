@@ -13,7 +13,6 @@ import * as AdminSelectors from '../../../store/admin.selectors';
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatCardModule],
   templateUrl: './activity-detail.component.html',
-  styleUrls: ['./activity-detail.component.css']
 })
 export class ActivityDetailComponent implements OnInit {
   private readonly store = inject(Store<{ admin: AdminState }>);
