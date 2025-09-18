@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -9,7 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_LOCALE, MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
-import { Event, EventStatus } from '../../../../../models';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { Administrator, Event, EventStatus, SubscriptionType } from '../../../../../models';
+import * as AdminSelectors from '../../../store/admin.selectors';
 
 @Component({
   selector: 'app-events-list',
@@ -23,6 +26,8 @@ export class EventsListComponent {
   @Output() create = new EventEmitter<void>();
   @Output() select = new EventEmitter<Event>();
 
+  private readonly store = inject(Store);
+
   displayedColumns: string[] = ['name', 'site', 'dates', 'status', 'actions'];
   dataSource = new MatTableDataSource<Event>([]);
   filterText = '';
@@ -30,6 +35,8 @@ export class EventsListComponent {
   filterDateFrom: string = '';
   filterDateTo: string = '';
   EventStatus = EventStatus;
+
+  admin$: Observable<Administrator | null> = this.store.select(AdminSelectors.selectCurrentAdmin);
 
   ngOnChanges() {
     this.dataSource.data = this.events ?? [];
@@ -61,6 +68,15 @@ export class EventsListComponent {
       }
       return matchesText && matchesStatus && matchesDate;
     });
+  }
+
+  canCreate(admin: Administrator | null): boolean {
+    if (!admin?.subscription?.subscriptionType) return false;
+    const type = admin.subscription.subscriptionType;
+    const count = this.events.length;
+    if (type === SubscriptionType.Esae) return count < 1;
+    if (type === SubscriptionType.Deraou) return count < 3;
+    return true;
   }
 
   statusLabel(e: Event): string {

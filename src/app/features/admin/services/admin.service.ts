@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse } from '../../../models';
+import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator } from '../../../models';
 import { CreateEventRequest, UpdateEventRequest } from './request-models/event.models';
 import { PoolStats, DashboardStats, RecentActivity } from '../store/admin.state';
 import { ApiHttpService } from '../../../core/services/api-http.service';
@@ -16,6 +16,10 @@ export class AdminService {
   // Auth
   login(email: string, password: string): Observable<JwtResponse> {
     return this.http.post<JwtResponse>(`/auth`, { email, password });
+  }
+
+  getCurrentAdmin(): Observable<Administrator> {
+    return this.http.get<Administrator>(`/administrators/current`);
   }
 
   // Sites
@@ -75,6 +79,10 @@ export class AdminService {
 
   deleteEvent(eventId: string): Observable<void> {
     return this.http.delete<void>(`/events/${eventId}`);
+  }
+
+  updateEventAllPlayersPresent(eventId: string, isAllPlayersPresent: boolean): Observable<void> {
+    return this.http.put<void>(`/events/${eventId}/all-players-present?isAllPlayersPresent=${isAllPlayersPresent}`, {});
   }
 
   // Pools

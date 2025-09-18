@@ -7,11 +7,14 @@ import { CommonModule } from '@angular/common';
 import { Event, EventStatus, GameSession, GameSessionStatus, Activity } from '../../../../../models';
 import { AdminService } from '../../../services/admin.service';
 import { Observable } from 'rxjs';
+import { SessionsAdminComponent } from './sessions-admin.component';
+import { Store } from '@ngrx/store';
+import * as AdminActions from '../../../store/admin.actions';
 
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, SessionsAdminComponent],
   templateUrl: './event-detail.component.html',
 })
 export class EventDetailComponent {
@@ -21,7 +24,7 @@ export class EventDetailComponent {
   sessions: GameSession[] = [];
   activities$!: Observable<Activity[]>;
   newSessionActivityId: string = '';
-  constructor(private readonly adminService: AdminService) {
+  constructor(private readonly adminService: AdminService, private readonly store: Store) {
     this.activities$ = this.adminService.getActivities();
   }
 
@@ -41,6 +44,10 @@ export class EventDetailComponent {
 
   canEdit(): boolean {
     return this.event?.status === EventStatus.Pending;
+  }
+
+  canAddPlayers(): boolean {
+    return this.event?.pools[0]?.isAllPlayersPresent!;
   }
 
   statusLabel(): string {
@@ -87,10 +94,21 @@ export class EventDetailComponent {
     });
   }
 
+  onAddSession(activityId: string) {
+    this.newSessionActivityId = activityId;
+    this.addSession();
+  }
+
   setSessionStatus(s: GameSession, status: 'Pending' | 'Active' | 'Completed' | 'Cancelled') {
     this.adminService.updateGameSessionStatus(s.id, status).subscribe(upd => {
       this.sessions = this.sessions.map(x => x.id === upd.id ? upd : x);
     });
+  }
+
+  onChangeStatus(ev: { id: string; status: GameSessionStatus }) {
+    const s = this.sessions.find(k => k.id === ev.id);
+    if (!s) return;
+    this.setSessionStatus(s, ev.status);
   }
 
   deleteSession(s: GameSession) {
@@ -118,6 +136,12 @@ export class EventDetailComponent {
     });
   }
 
+  onStartTimeChange(ev: { id: string; hhmm: string }) {
+    const s = this.sessions.find(k => k.id === ev.id);
+    if (!s) return;
+    this.updateSessionTime(s, ev.hhmm);
+  }
+
   updateSessionEndTime(s: GameSession, hhmm: string) {
     if (!this.canEdit() || !hhmm) return;
     const [hh, mm] = hhmm.split(':').map(x => parseInt(x, 10));
@@ -127,6 +151,23 @@ export class EventDetailComponent {
     this.adminService.updateGameSessionEndTime(s.id, base).subscribe(upd => {
       this.sessions = this.sessions.map(x => x.id === upd.id ? upd : x);
     });
+  }
+
+  onEndTimeChange(ev: { id: string; hhmm: string }) {
+    const s = this.sessions.find(k => k.id === ev.id);
+    if (!s) return;
+    this.updateSessionEndTime(s, ev.hhmm);
+  }
+
+  onRemoveSession(sessionId: string) {
+    const s = this.sessions.find(k => k.id === sessionId);
+    if (!s) return;
+    this.deleteSession(s);
+  }
+
+  onValidateAllPresent() {
+    if (!this.event?.id) return;
+    this.store.dispatch(AdminActions.validateAllPlayersPresent({ eventId: this.event.id, isAllPlayersPresent: true }));
   }
 }
 

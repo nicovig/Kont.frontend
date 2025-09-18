@@ -13,7 +13,7 @@ import { EventDetailComponent } from './event-detail/event-detail.component';
 import { Store } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Event, Site, Activity } from '../../../../models';
+import { Event, Site, Activity, User, Administrator } from '../../../../models';
 import * as AdminActions from '../../store/admin.actions';
 import * as AdminSelectors from '../../store/admin.selectors';
 

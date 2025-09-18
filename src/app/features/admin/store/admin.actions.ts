@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGroup, PlayerGlobalScore, ActivitySummaryData, JwtResponse } from '../../../models';
+import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGroup, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator } from '../../../models';
 import { PoolStats, DashboardStats, RecentActivity } from './admin.state';
 import { CreateActivityRequest, UpdateActivityRequest } from '../services/request-models/activity.models';
 import { CreateEventRequest, UpdateEventRequest } from '../services/request-models/event.models';
@@ -26,6 +26,16 @@ export const logoutAdmin = createAction(
 
 export const loadCurrentAdmin = createAction(
   '[Admin] Load Current Admin'
+);
+
+export const loadCurrentAdminSuccess = createAction(
+  '[Admin] Load Current Admin Success',
+  props<{ admin: Administrator }>()
+);
+
+export const loadCurrentAdminFailure = createAction(
+  '[Admin] Load Current Admin Failure',
+  props<{ error: string }>()
 );
 
 // Sites Actions
@@ -185,6 +195,20 @@ export const deleteEventSuccess = createAction(
 
 export const deleteEventFailure = createAction(
   '[Admin] Delete Event Failure',
+  props<{ error: string }>()
+);
+
+export const validateAllPlayersPresent = createAction(
+  '[Admin] Validate All Players Present',
+  props<{ eventId: string; isAllPlayersPresent: boolean }>()
+);
+
+export const validateAllPlayersPresentSuccess = createAction(
+  '[Admin] Validate All Players Present Success'
+);
+
+export const validateAllPlayersPresentFailure = createAction(
+  '[Admin] Validate All Players Present Failure',
   props<{ error: string }>()
 );
 

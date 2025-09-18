@@ -26,28 +26,37 @@ export class AdminEffects {
       )
     )
   );
+  validateAllPlayersPresent$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.validateAllPlayersPresent),
+      switchMap(({ eventId, isAllPlayersPresent }) =>
+        this.adminService.updateEventAllPlayersPresent(eventId, isAllPlayersPresent).pipe(
+          map(() => AdminActions.validateAllPlayersPresentSuccess()),
+          catchError(error => of(AdminActions.validateAllPlayersPresentFailure({ error: error.message })))
+        )
+      )
+    )
+  );
 
-  // Redirect to dashboard after successful login
-  navigateOnLoginSuccess$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(AdminActions.loginAdminSuccess),
-        tap(({ jwtResponse }) => {
-          // Store JWT token
-          localStorage.setItem('token', jwtResponse.token);
-          // Store admin info in localStorage
-          localStorage.setItem('admin', JSON.stringify({
-            id: jwtResponse.userId,
-            email: jwtResponse.email,
-            firstname: jwtResponse.firstname,
-            lastname: jwtResponse.lastname,
-            role: jwtResponse.role
-          }));
-          // Redirect to admin dashboard
-          this.router.navigateByUrl('/admin');
-        })
-      ),
-    { dispatch: false }
+  loadCurrentAdmin$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.loadCurrentAdmin),
+      switchMap(() => this.adminService.getCurrentAdmin().pipe(
+        map(admin => AdminActions.loadCurrentAdminSuccess({ admin })),
+        catchError(error => of(AdminActions.loadCurrentAdminFailure({ error: error.message })))
+      ))
+    )
+  );
+
+  navigateOnLoginSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.loginAdminSuccess),
+      tap(({ jwtResponse }) =>  localStorage.setItem('token', jwtResponse.token)),
+      switchMap(() => this.adminService.getCurrentAdmin()),
+      tap(() => this.router.navigateByUrl('/admin')),
+      map(admin => AdminActions.loadCurrentAdminSuccess({ admin })),
+      catchError(error => of(AdminActions.loadCurrentAdminFailure({ error: error.message })))
+    )
   );
 
   // Sites Effects

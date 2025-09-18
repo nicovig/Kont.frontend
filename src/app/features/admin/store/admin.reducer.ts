@@ -14,19 +14,7 @@ export const adminReducer = createReducer(
 
   on(AdminActions.loginAdminSuccess, (state, { jwtResponse }) => ({
     ...state,
-    currentAdmin: {
-      id: jwtResponse.userId,
-      email: jwtResponse.email,
-      firstname: jwtResponse.firstname,
-      lastname: jwtResponse.lastname,
-      password: '',
-      createdAt: new Date(),
-      phoneNumber: '',
-      subscription: {} as any,
-      sites: [],
-      role: { id: '', roleType: jwtResponse.role } as any,
-      isActive: true
-    },
+    currentAdmin: state.currentAdmin,
     isAuthenticated: true,
     authLoading: false,
     authError: null
@@ -38,6 +26,12 @@ export const adminReducer = createReducer(
     isAuthenticated: false,
     authLoading: false,
     authError: error
+  })),
+
+  on(AdminActions.loadCurrentAdminSuccess, (state, { admin }) => ({
+    ...state,
+    currentAdmin: admin,
+    isAuthenticated: true
   })),
 
   on(AdminActions.logoutAdmin, (state) => ({

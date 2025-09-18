@@ -9,6 +9,7 @@ export interface Subscription {
 }
 
 export enum SubscriptionType {
+  Esae = 'Esae',
   Deraou = 'Deraou',
   Klasel = 'Klasel',
   Stroll = 'Stroll'

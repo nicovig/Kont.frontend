@@ -19,48 +19,18 @@
           <span class="font-medium">Activités:</span> {{ event.activities.length || 0 }}
         </div>
       </div>
-      <div class="mt-6">
-        <h3 class="text-lg font-semibold mb-2">Sessions</h3>
-        <div class="flex items-end gap-4 mb-4 items-start">
-          <mat-form-field appearance="fill" class="w-80">
-            <mat-label>Activité</mat-label>
-            <mat-select [(ngModel)]="newSessionActivityId">
-              <mat-option *ngFor="let a of event?.activities" [value]="a.id">{{ a.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <button class="mt-2" mat-stroked-button color="primary" (click)="addSession()" [disabled]="!newSessionActivityId || !canEdit()">Ajouter une session</button>
-        </div>
-        <div class="rounded-lg border">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="text-left">
-                <th class="p-3">Activité</th>
-                <th class="p-3">Début</th>
-                <th class="p-3">Fin</th>
-                <th class="p-3">Statut</th>
-                <th class="p-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let s of sessions" class="border-t">
-                <td class="p-3">{{ s.activity.name }}</td>
-                <td class="p-3">
-                  <input type="time" class="border rounded px-2 py-1" [ngModel]="timeFromDate(s.startedAt)" (ngModelChange)="updateSessionTime(s, $event)" [disabled]="!canEdit()" />
-                </td>
-                <td class="p-3">
-                  <input type="time" class="border rounded px-2 py-1" [ngModel]="timeFromDate(s.endedAt)" (ngModelChange)="updateSessionEndTime(s, $event)" [disabled]="!canEdit()" />
-                </td>
-                <td class="p-3"><span [class]="sessionStatusClass(s)">{{ sessionStatusLabel(s) }}</span></td>
-                <td class="p-3 flex gap-2">
-                  <button mat-button color="primary" (click)="setSessionStatus(s, 'Active')" [disabled]="!canEdit()">Démarrer</button>
-                  <button mat-button color="primary" (click)="setSessionStatus(s, 'Completed')" [disabled]="!canEdit()">Terminer</button>
-                  <button mat-button color="warn" (click)="deleteSession(s)" [disabled]="!canEdit()">Supprimer</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <app-sessions-admin
+        [event]="event"
+        [sessions]="sessions"
+        [canEdit]="canEdit()"
+        [canAddPlayers]="canAddPlayers()"
+        (add)="onAddSession($event)"
+        (startTimeChange)="onStartTimeChange($event)"
+        (endTimeChange)="onEndTimeChange($event)"
+        (changeStatus)="onChangeStatus($event)"
+        (remove)="onRemoveSession($event)"
+        (validateAllPresent)="onValidateAllPresent()"
+      ></app-sessions-admin>
       <div class="mt-6 flex gap-2">
         <button mat-raised-button color="primary" (click)="onEdit(event)" [disabled]="!canEdit()">Modifier</button>
         <button mat-button (click)="onBack()">Retour à la liste</button>
