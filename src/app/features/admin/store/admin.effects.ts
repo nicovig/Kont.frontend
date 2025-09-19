@@ -38,6 +38,18 @@ export class AdminEffects {
     )
   );
 
+  sendQRCodeToEmailList$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.sendQRCodeToEmailList),
+      switchMap(({ eventId, emails }) =>
+        this.adminService.sendQRCodeToEmailList(eventId, emails).pipe(
+          map(response => AdminActions.sendQRCodeToEmailListSuccess({ message: response.message })),
+          catchError(error => of(AdminActions.sendQRCodeToEmailListFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
   loadCurrentAdmin$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.loadCurrentAdmin),

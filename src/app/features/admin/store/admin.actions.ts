@@ -212,6 +212,22 @@ export const validateAllPlayersPresentFailure = createAction(
   props<{ error: string }>()
 );
 
+// QR Code Email Actions
+export const sendQRCodeToEmailList = createAction(
+  '[Admin] Send QR Code To Email List',
+  props<{ eventId: string; emails: string[] }>()
+);
+
+export const sendQRCodeToEmailListSuccess = createAction(
+  '[Admin] Send QR Code To Email List Success',
+  props<{ message: string }>()
+);
+
+export const sendQRCodeToEmailListFailure = createAction(
+  '[Admin] Send QR Code To Email List Failure',
+  props<{ error: string }>()
+);
+
 // Dashboard Actions
 export const loadDashboardStats = createAction(
   '[Admin] Load Dashboard Stats'

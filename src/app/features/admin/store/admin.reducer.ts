@@ -189,4 +189,20 @@ export const adminReducer = createReducer(
       recentActivity: [update, ...state.dashboardStats.recentActivity].slice(0, 10)
     } : state.dashboardStats
   })),
+
+  // QR Code Email Reducers
+  on(AdminActions.sendQRCodeToEmailList, (state) => ({
+    ...state,
+    // Could add loading state if needed
+  })),
+
+  on(AdminActions.sendQRCodeToEmailListSuccess, (state, { message }) => ({
+    ...state,
+    // Handle success if needed
+  })),
+
+  on(AdminActions.sendQRCodeToEmailListFailure, (state, { error }) => ({
+    ...state,
+    // Handle error if needed
+  })),
 );

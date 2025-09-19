@@ -85,6 +85,10 @@ export class AdminService {
     return this.http.put<void>(`/events/${eventId}/all-players-present?isAllPlayersPresent=${isAllPlayersPresent}`, {});
   }
 
+  sendQRCodeToEmailList(eventId: string, emails: string[]): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`/events/${eventId}/send-qr-codes`, emails);
+  }
+
   // Pools
   getPools(): Observable<Pool[]> {
     return this.http.get<Pool[]>(`/pools`);

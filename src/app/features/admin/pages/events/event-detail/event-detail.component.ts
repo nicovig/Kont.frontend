@@ -1,15 +1,18 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnDestroy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Event, EventStatus, GameSession, GameSessionStatus, Activity } from '../../../../../models';
 import { AdminService } from '../../../services/admin.service';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { SessionsAdminComponent } from './sessions-admin.component';
 import { Store } from '@ngrx/store';
 import * as AdminActions from '../../../store/admin.actions';
+import { NotificationService } from '../../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-event-detail',
@@ -17,15 +20,41 @@ import * as AdminActions from '../../../store/admin.actions';
   imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, SessionsAdminComponent],
   templateUrl: './event-detail.component.html',
 })
-export class EventDetailComponent {
+export class EventDetailComponent implements OnInit, OnDestroy {
   @Input() event: Event | null = null;
   @Output() editRequested = new EventEmitter<Event>();
   @Output() backToList = new EventEmitter<void>();
   sessions: GameSession[] = [];
   activities$!: Observable<Activity[]>;
   newSessionActivityId: string = '';
-  constructor(private readonly adminService: AdminService, private readonly store: Store) {
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private readonly adminService: AdminService, 
+    private readonly store: Store,
+    private readonly dialog: MatDialog,
+    private readonly notificationService: NotificationService
+  ) {
     this.activities$ = this.adminService.getActivities();
+  }
+
+  ngOnInit(): void {
+    // Listen to QR code email actions
+    this.store.select(state => state).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((state: any) => {
+      if (state.admin?.qrCodeEmailSuccess) {
+        this.notificationService.showSuccess('QR codes envoyés avec succès !');
+      }
+      if (state.admin?.qrCodeEmailError) {
+        this.notificationService.showError(`Erreur lors de l'envoi : ${state.admin.qrCodeEmailError}`);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnChanges() {
@@ -168,6 +197,34 @@ export class EventDetailComponent {
   onValidateAllPresent() {
     if (!this.event?.id) return;
     this.store.dispatch(AdminActions.validateAllPlayersPresent({ eventId: this.event.id, isAllPlayersPresent: true }));
+  }
+
+  onSendQRCode() {
+    if (!this.event?.id) return;
+
+    const emailsInput = prompt('Entrez les adresses email séparées par des virgules:');
+    if (!emailsInput) return;
+
+    const emails = emailsInput.split(',').map(email => email.trim()).filter(email => email);
+    
+    if (emails.length === 0) {
+      this.notificationService.showError('Aucune adresse email valide fournie');
+      return;
+    }
+
+    // Validate emails
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const invalidEmails = emails.filter(email => !emailRegex.test(email));
+    
+    if (invalidEmails.length > 0) {
+      this.notificationService.showError(`Adresses email invalides : ${invalidEmails.join(', ')}`);
+      return;
+    }
+
+    this.store.dispatch(AdminActions.sendQRCodeToEmailList({ 
+      eventId: this.event.id, 
+      emails 
+    }));
   }
 }
 

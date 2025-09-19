@@ -33,6 +33,9 @@
       ></app-sessions-admin>
       <div class="mt-6 flex gap-2">
         <button mat-raised-button color="primary" (click)="onEdit(event)" [disabled]="!canEdit()">Modifier</button>
+        <button mat-raised-button color="accent" (click)="onSendQRCode()" [disabled]="!event?.pools?.length">
+          📧 Envoyer QR Codes
+        </button>
         <button mat-button (click)="onBack()">Retour à la liste</button>
       </div>
     </div>
