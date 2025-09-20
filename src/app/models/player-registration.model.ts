@@ -1,10 +1,15 @@
-import { Player } from "./player.model";
-import { Pool } from "./pool.model";
-
 export interface PlayerRegistration {
   id: string;
-  player: Player;
-  pool: Pool;
-  registeredAt: Date;
-  checkedInAt?: Date;
+  playerFirstname: string;
+  playerLastname: string;
+  playerEmail: string;
+  playerUsername: string;
+  playerType: PlayerType;
+  registeredAt: string;
+  checkedInAt?: string;
+}
+
+export enum PlayerType {
+  Player = 'Player',
+  KeyPlayer = 'KeyPlayer'
 }

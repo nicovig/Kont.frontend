@@ -10,6 +10,7 @@ import { AdminService } from '../../../services/admin.service';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SessionsAdminComponent } from './sessions-admin.component';
+import { PlayerRegistrationsComponent } from './player-registrations.component';
 import { Store } from '@ngrx/store';
 import * as AdminActions from '../../../store/admin.actions';
 import { NotificationService } from '../../../../../core/services/notification.service';
@@ -17,7 +18,7 @@ import { NotificationService } from '../../../../../core/services/notification.s
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, SessionsAdminComponent],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, SessionsAdminComponent, PlayerRegistrationsComponent],
   templateUrl: './event-detail.component.html',
 })
 export class EventDetailComponent implements OnInit, OnDestroy {

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator } from '../../../models';
+import { PlayerRegistration as PlayerRegistrationModel } from '../../../models/player-registration.model';
 import { CreateEventRequest, UpdateEventRequest } from './request-models/event.models';
 import { PoolStats, DashboardStats, RecentActivity } from '../store/admin.state';
 import { ApiHttpService } from '../../../core/services/api-http.service';
@@ -87,6 +88,10 @@ export class AdminService {
 
   sendQRCodeToEmailList(eventId: string, emails: string[]): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`/events/${eventId}/send-qr-codes`, emails);
+  }
+
+  getPlayerRegistrations(eventId: string): Observable<PlayerRegistrationModel[]> {
+    return this.http.get<PlayerRegistrationModel[]>(`/events/${eventId}/player-registrations`);
   }
 
   // Pools

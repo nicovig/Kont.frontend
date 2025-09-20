@@ -31,6 +31,11 @@
         (remove)="onRemoveSession($event)"
         (validateAllPresent)="onValidateAllPresent()"
       ></app-sessions-admin>
+      
+      <app-player-registrations
+        [eventId]="event?.id || ''"
+        *ngIf="event?.id"
+      ></app-player-registrations>
       <div class="mt-6 flex gap-2">
         <button mat-raised-button color="primary" (click)="onEdit(event)" [disabled]="!canEdit()">Modifier</button>
         <button mat-raised-button color="accent" (click)="onSendQRCode()" [disabled]="!event?.pools?.length">
