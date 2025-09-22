@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
-import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGroup, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator } from '../../../models';
-import { PoolStats, DashboardStats, RecentActivity } from './admin.state';
+import { DashboardStats, RecentActivity } from './admin.state';
+import { Site, Activity, Event, JwtResponse, Administrator, PlayerGroup } from '../../../models';
 import { CreateActivityRequest, UpdateActivityRequest } from '../services/request-models/activity.models';
 import { CreateEventRequest, UpdateEventRequest } from '../services/request-models/event.models';
 
@@ -270,5 +270,21 @@ export const generateRecoveryQRSuccess = createAction(
 
 export const generateRecoveryQRFailure = createAction(
   '[Admin] Generate Recovery QR Failure',
+  props<{ error: string }>()
+);
+
+// Groups Generation Actions
+export const generateGroupsForGameSession = createAction(
+  '[Admin] Generate Groups For GameSession',
+  props<{ gameSessionId: string; isFirstOfActivity: boolean }>()
+);
+
+export const generateGroupsForGameSessionSuccess = createAction(
+  '[Admin] Generate Groups For GameSession Success',
+  props<{ gameSessionId: string; groups: PlayerGroup[] }>()
+);
+
+export const generateGroupsForGameSessionFailure = createAction(
+  '[Admin] Generate Groups For GameSession Failure',
   props<{ error: string }>()
 );

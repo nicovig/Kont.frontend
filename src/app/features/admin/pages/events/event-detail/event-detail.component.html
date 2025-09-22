@@ -19,6 +19,15 @@
           <span class="font-medium">Activités:</span> {{ event.activities.length || 0 }}
         </div>
       </div>
+      <div class="mt-4">
+        <ng-container *ngIf="sessions && sessions.length as n">
+          <app-generate-groups-button
+            [gameSessionId]="selectedSessionId()"
+            [isFirstOfActivity]="isFirstSessionOfActivity()"
+            [disabled]="!canGenerateGroups()"
+          ></app-generate-groups-button>
+        </ng-container>
+      </div>
       <app-sessions-admin
         [event]="event"
         [sessions]="sessions"

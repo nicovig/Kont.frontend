@@ -15,6 +15,12 @@
             <textarea matInput [(ngModel)]="activityData.description" name="description" rows="3" required></textarea>
           </mat-form-field>
         </div>
+        <div class="mb-4">
+          <mat-form-field appearance="fill" class="w-full md:w-1/3">
+            <mat-label>Taille max par groupe</mat-label>
+            <input matInput type="number" min="1" step="1" [(ngModel)]="activityData.playersPerGroupLimit" name="playersPerGroupLimit" required />
+          </mat-form-field>
+        </div>
         <div class="mt-6">
           <h3 class="text-lg font-semibold">Métriques</h3>
           <p class="text-gray-600 text-sm mb-4">Définissez une ou plusieurs métriques qui serviront au calcul des scores. La somme des coefficients doit être égale à 1.</p>

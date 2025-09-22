@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator } from '../../../models';
+import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator, PlayerGroup } from '../../../models';
 import { PlayerRegistration as PlayerRegistrationModel } from '../../../models/player-registration.model';
 import { CreateEventRequest, UpdateEventRequest } from './request-models/event.models';
 import { PoolStats, DashboardStats, RecentActivity } from '../store/admin.state';
@@ -55,6 +55,15 @@ export class AdminService {
 
   updateActivity(activity: UpdateActivityRequest): Observable<Activity> {
     return this.http.put<Activity>(`/activities/${activity.id}`, activity);
+  }
+
+  // Groups generation
+  generateGroupsWithoutScores(gameSessionId: string): Observable<PlayerGroup[]> {
+    return this.http.post<PlayerGroup[]>(`/gamesessions/${gameSessionId}/generate-groups/no-scores`, {});
+  }
+
+  generateGroupsWithScores(gameSessionId: string): Observable<PlayerGroup[]> {
+    return this.http.post<PlayerGroup[]>(`/gamesessions/${gameSessionId}/generate-groups/with-scores`, {});
   }
 
   deleteActivity(activityId: string): Observable<void> {

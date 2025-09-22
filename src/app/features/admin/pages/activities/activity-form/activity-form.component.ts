@@ -53,7 +53,8 @@ export class ActivityFormComponent implements OnInit {
     } else {
       this.activityData = {
         name: '',
-        description: ''
+        description: '',
+        playersPerGroupLimit: 2
       };
       this.scoringMetrics = [{ name: '', unit: '', higherIsBetter: true, coefficient: 1 }];
     }
@@ -152,6 +153,10 @@ export class ActivityFormComponent implements OnInit {
   getValidationError(): string | null {
     if (!this.activityData.name || !this.activityData.site || !this.activityData.description) {
       return 'Nom, site, métrique et description sont requis.';
+    }
+    const limit = Number(this.activityData.playersPerGroupLimit);
+    if (!Number.isFinite(limit) || limit <= 0 || !Number.isInteger(limit)) {
+      return 'La taille max par groupe doit être un entier positif.';
     }
     if (!this.scoringMetrics.length) {
       return 'Ajoutez au moins une métrique.';

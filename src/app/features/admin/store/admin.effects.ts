@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, map, switchMap, exhaustMap, concatMap, mergeMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, exhaustMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { AdminService } from '../services/admin.service';
@@ -130,6 +130,22 @@ export class AdminEffects {
           catchError(error => of(AdminActions.updateActivityFailure({ error: error.message })))
         )
       )
+    )
+  );
+
+  // Generate Groups
+  generateGroupsForGameSession$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.generateGroupsForGameSession),
+      switchMap(({ gameSessionId, isFirstOfActivity }) => {
+        const call$ = isFirstOfActivity
+          ? this.adminService.generateGroupsWithoutScores(gameSessionId)
+          : this.adminService.generateGroupsWithScores(gameSessionId);
+        return call$.pipe(
+          map(groups => AdminActions.generateGroupsForGameSessionSuccess({ gameSessionId, groups })),
+          catchError(error => of(AdminActions.generateGroupsForGameSessionFailure({ error: error.message })))
+        );
+      })
     )
   );
 

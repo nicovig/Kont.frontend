@@ -5,20 +5,21 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Event, EventStatus, GameSession, GameSessionStatus, Activity } from '../../../../../models';
-import { AdminService } from '../../../services/admin.service';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SessionsAdminComponent } from './sessions-admin.component';
-import { PlayerRegistrationsComponent } from './player-registrations.component';
 import { Store } from '@ngrx/store';
+import { GenerateGroupsButtonComponent } from './generate-groups-button.component';
+import { PlayerRegistrationsComponent } from './player-registrations.component';
 import * as AdminActions from '../../../store/admin.actions';
 import { NotificationService } from '../../../../../core/services/notification.service';
+import { Event, EventStatus, GameSession, GameSessionStatus, Activity } from '../../../../../models';
+import { AdminService } from '../../../services/admin.service';
 
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, SessionsAdminComponent, PlayerRegistrationsComponent],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, SessionsAdminComponent, PlayerRegistrationsComponent, GenerateGroupsButtonComponent],
   templateUrl: './event-detail.component.html',
 })
 export class EventDetailComponent implements OnInit, OnDestroy {
@@ -62,6 +63,26 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     if (this.event?.id) {
       this.adminService.getGameSessionsByEvent(this.event.id).subscribe(s => this.sessions = s);
     }
+  }
+
+  selectedSessionId(): string {
+    const candidate = this.sessions.find(s => s.status === GameSessionStatus.Pending);
+    return candidate?.id || '';
+  }
+
+  isFirstSessionOfActivity(): boolean {
+    if (!this.sessions.length) return true;
+    const pending = this.sessions.filter(s => s.status === GameSessionStatus.Pending);
+    return pending.length > 0 && this.sessions.every(s => s.status === GameSessionStatus.Completed || s.status === GameSessionStatus.Cancelled || s.status === GameSessionStatus.Pending);
+  }
+
+  canGenerateGroups(): boolean {
+    const s = this.sessions.find(x => x.id === this.selectedSessionId());
+    if (!s) return false;
+    const poolActive = s.pool?.status === 'Active' || s.pool?.isActive === true;
+    const sessionPending = s.status === GameSessionStatus.Pending;
+    const othersClosedOrNone = this.sessions.filter(x => x.id !== s.id).every(x => x.status === GameSessionStatus.Completed || x.status === GameSessionStatus.Cancelled) || this.sessions.length === 1;
+    return poolActive && sessionPending && othersClosedOrNone;
   }
 
   onEdit(event: Event) {

@@ -4,6 +4,7 @@ export interface CreateActivityRequest {
     name: string;
     description: string;
     site: Site;
+    playersPerGroupLimit: number;
     scoringMetrics: CreateScoringMetricRequest[];
 }
 

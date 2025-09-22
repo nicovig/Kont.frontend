@@ -7,6 +7,7 @@ export interface Activity {
   name: string;
   description?: string;
   site: Site;
+  playersPerGroupLimit: number;
   scoringMetrics: ScoringMetric[];
   createdBy: Administrator;
   createdAt: Date;
