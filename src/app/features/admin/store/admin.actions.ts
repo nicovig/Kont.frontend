@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { DashboardStats, RecentActivity } from './admin.state';
-import { Site, Activity, Event, JwtResponse, Administrator, PlayerGroup } from '../../../models';
+import { Site, Activity, Event, JwtResponse, Administrator, PlayerGroup, EventStatus } from '../../../models';
 import { CreateActivityRequest, UpdateActivityRequest } from '../services/request-models/activity.models';
 import { CreateEventRequest, UpdateEventRequest } from '../services/request-models/event.models';
 
@@ -169,6 +169,21 @@ export const updateEventFailure = createAction(
   props<{ error: string }>()
 );
 
+export const updateEventStatus = createAction(
+  '[Admin] Update Event Status',
+  props<{ eventId: string; status: 'Pending' | 'Active' | 'Completed' | 'Cancelled' }>()
+);
+
+export const updateEventStatusSuccess = createAction(
+  '[Admin] Update Event Status Success',
+  props<{ event: Event }>()
+);
+
+export const updateEventStatusFailure = createAction(
+  '[Admin] Update Event Status Failure',
+  props<{ error: string }>()
+);
+
 export const deleteEvent = createAction(
   '[Admin] Delete Event',
   props<{ eventId: string }>()
@@ -225,6 +240,21 @@ export const updatePlayerPresenceSuccess = createAction(
 
 export const updatePlayerPresenceFailure = createAction(
   '[Admin] Update Player Presence Failure',
+  props<{ error: string }>()
+);
+
+// Referent toggle
+export const togglePlayerType = createAction(
+  '[Admin] Toggle Player Type',
+  props<{ playerRegistrationId: string; toReferent: boolean; eventId: string }>()
+);
+
+export const togglePlayerTypeSuccess = createAction(
+  '[Admin] Toggle Player Type Success'
+);
+
+export const togglePlayerTypeFailure = createAction(
+  '[Admin] Toggle Player Type Failure',
   props<{ error: string }>()
 );
 

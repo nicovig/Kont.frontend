@@ -11,9 +11,11 @@ import { SessionsAdminComponent } from './sessions-admin/sessions-admin.componen
 import { Store } from '@ngrx/store';
 import { PlayerRegistrationsComponent } from './player-registration/player-registrations.component';
 import * as AdminActions from '../../../store/admin.actions';
+import * as AdminSelectors from '../../../store/admin.selectors';
 import { NotificationService } from '../../../../../core/services/notification.service';
 import { Event, EventStatus, GameSession, GameSessionStatus, Activity } from '../../../../../models';
 import { AdminService } from '../../../services/admin.service';
+import { UpdateEventRequest } from '../../../services/request-models/event.models';
 
 @Component({
   selector: 'app-event-detail',
@@ -51,6 +53,16 @@ export class EventDetailComponent implements OnInit, OnDestroy {
         this.notificationService.showError(`Erreur lors de l'envoi : ${state.admin.qrCodeEmailError}`);
       }
     });
+
+    this.store.select(AdminSelectors.selectSelectedEvent)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(ev => {
+        if (!ev) return;
+        if (this.event?.id && ev.id === this.event.id) {
+          this.event = ev;
+          this.adminService.getGameSessionsByEvent(ev.id).subscribe(s => this.sessions = s);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -251,6 +263,23 @@ export class EventDetailComponent implements OnInit, OnDestroy {
       eventId: this.event.id, 
       emails 
     }));
+  }
+
+  onStartEvent() {
+    if (!this.event?.id) return;
+
+    const updateEventRequest: UpdateEventRequest = {
+      id: this.event.id,
+      name: this.event.name,
+      eventLink: this.event.eventLink,
+      startedAt: this.event.startedAt!,
+      endedAt: this.event.endedAt!,
+      siteId: this.event.site.id,
+      activityIds: this.event.activities.map(a => a.id),
+      status: EventStatus.Active,
+    };
+
+    this.store.dispatch(AdminActions.updateEvent({ request: updateEventRequest }));
   }
 }
 

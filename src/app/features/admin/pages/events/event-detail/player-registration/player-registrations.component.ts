@@ -7,10 +7,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { PlayerRegistration } from '../../../../../../models';
-import { Store } from '@ngrx/store';
+import { EventStatus, PlayerRegistration } from '../../../../../../models';
 import * as AdminActions from '../../../../store/admin.actions';
 import * as AdminSelectors from '../../../../store/admin.selectors';
 
@@ -75,5 +75,10 @@ export class PlayerRegistrationsComponent implements OnInit, OnDestroy {
   togglePresent(player: PlayerRegistration, isPresent: boolean): void {
     if (!this.eventId) return;
     this.store.dispatch(AdminActions.updatePlayerPresence({ eventId: this.eventId, playerRegistrationId: player.id, isPresent }));
+  }
+
+  toggleType(playerRegistration: PlayerRegistration): void {
+    const toReferent = playerRegistration.playerType !== 'KeyPlayer';
+    this.store.dispatch(AdminActions.togglePlayerType({ playerRegistrationId: playerRegistration.id, toReferent, eventId: this.eventId }));
   }
 }

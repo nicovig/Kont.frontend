@@ -19,6 +19,7 @@
           <span class="font-medium">Activités:</span> {{ event.activities.length || 0 }}
         </div>
       </div>
+      <button mat-raised-button color="primary" (click)="onStartEvent()">Démarrer l'événement</button>
       <app-sessions-admin
         [event]="event"
         [sessions]="sessions"

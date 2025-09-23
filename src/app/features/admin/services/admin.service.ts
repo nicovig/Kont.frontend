@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator, PlayerGroup } from '../../../models';
+import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator, PlayerGroup, EventStatus } from '../../../models';
 import { PlayerRegistration as PlayerRegistrationModel } from '../../../models/player-registration.model';
 import { CreateEventRequest, UpdateEventRequest } from './request-models/event.models';
 import { PoolStats, DashboardStats, RecentActivity } from '../store/admin.state';
@@ -70,6 +70,12 @@ export class AdminService {
     return this.http.put<Event>(`/events/${event.id}`, event);
   }
 
+  updateEventStatus(eventId: string, eventStatus: string): Observable<Event> {
+    return this.http.put<Event>(`/events/${eventId}/status`, eventStatus, {
+      headers: { 'Content-Type': 'text/plain' }
+    });
+  }
+
   deleteEvent(eventId: string): Observable<void> {
     return this.http.delete<void>(`/events/${eventId}`);
   }
@@ -136,14 +142,12 @@ export class AdminService {
   }
 
   // Referent Management
-  assignReferent(poolId: string, referentId: string): Observable<void> {
-    return this.http.post<void>(`/pools/${poolId}/referents`, {
-      referentId
-    });
+  assignReferent(playerRegistrationId: string): Observable<void> {
+    return this.http.put<void>(`/administrators/referents/${playerRegistrationId}`, {});
   }
 
-  removeReferent(poolId: string, referentId: string): Observable<void> {
-    return this.http.delete<void>(`/pools/${poolId}/referents/${referentId}`);
+  removeReferent(playerRegistrationId: string): Observable<void> {
+    return this.http.delete<void>(`/administrators/referents/${playerRegistrationId}`);
   }
 
   // Account Recovery

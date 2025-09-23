@@ -225,6 +225,24 @@ export class AdminEffects {
     )
   );
 
+  togglePlayerType$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.togglePlayerType),
+      switchMap(({ playerRegistrationId, toReferent, eventId }) => {
+        const call$ = toReferent
+          ? this.adminService.assignReferent(playerRegistrationId)
+          : this.adminService.removeReferent(playerRegistrationId);
+        return call$.pipe(
+          switchMap(() => [
+            AdminActions.togglePlayerTypeSuccess(),
+            AdminActions.loadPlayerRegistrations({ eventId })
+          ]),
+          catchError(error => of(AdminActions.togglePlayerTypeFailure({ error: error.message })))
+        );
+      })
+    )
+  );
+
   createEvent$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.createEvent),
@@ -250,6 +268,18 @@ export class AdminEffects {
         this.adminService.updateEvent(request).pipe(
           map(event => AdminActions.updateEventSuccess({ event })),
           catchError(error => of(AdminActions.updateEventFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  updateEventStatus$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.updateEventStatus),
+      switchMap(({ eventId, status }) =>
+        this.adminService.updateEventStatus(eventId, status).pipe(
+          map(event => AdminActions.updateEventStatusSuccess({ event })),
+          catchError(error => of(AdminActions.updateEventStatusFailure({ error: error.message })))
         )
       )
     )

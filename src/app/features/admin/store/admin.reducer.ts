@@ -135,6 +135,12 @@ export const adminReducer = createReducer(
     selectedEvent: state.selectedEvent?.id === event.id ? event : state.selectedEvent
   })),
 
+  on(AdminActions.updateEventStatusSuccess, (state, { event }) => ({
+    ...state,
+    events: state.events.map(e => e.id === event.id ? event : e),
+    selectedEvent: state.selectedEvent?.id === event.id ? event : state.selectedEvent
+  })),
+
   on(AdminActions.deleteEventSuccess, (state, { eventId }) => ({
     ...state,
     events: state.events.filter(e => e.id !== eventId),
