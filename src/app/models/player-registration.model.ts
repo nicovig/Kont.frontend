@@ -1,3 +1,5 @@
+import { PlayerType } from './player.model';
+
 export interface PlayerRegistration {
   id: string;
   playerFirstname: string;
@@ -7,9 +9,4 @@ export interface PlayerRegistration {
   playerType: PlayerType;
   registeredAt: string;
   checkedInAt?: string;
-}
-
-export enum PlayerType {
-  Player = 'Player',
-  KeyPlayer = 'KeyPlayer'
 }

@@ -139,6 +139,30 @@ export class GodEffects {
       )
     )
   );
+
+  loadSites$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GodActions.loadSites),
+      exhaustMap(() =>
+        this.godService.getSites().pipe(
+          map(sites => GodActions.loadSitesSuccess({ sites })),
+          catchError(error => of(GodActions.loadSitesFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  createSite$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GodActions.createSite),
+      exhaustMap(({ site }) =>
+        this.godService.createSite(site).pipe(
+          map(createdSite => GodActions.createSiteSuccess({ site: createdSite })),
+          catchError(error => of(GodActions.createSiteFailure({ error: error.message })))
+        )
+      )
+    )
+  );
 }
 
 

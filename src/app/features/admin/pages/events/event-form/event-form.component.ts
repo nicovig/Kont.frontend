@@ -23,7 +23,7 @@ import { CreateEventRequest, UpdateEventRequest } from '../../../services/reques
 })
 export class EventFormComponent {
   private readonly store = inject(Store);
-  sites$: Observable<Site[]> = this.store.select(AdminSelectors.selectSites);
+
   activities$: Observable<Activity[]> = this.store.select(AdminSelectors.selectActivities);
 
   @Input() event: Event | null = null;
@@ -42,7 +42,6 @@ export class EventFormComponent {
         eventLink: this.event.eventLink,
         startedAt: this.event.startedAt ? new Date(this.event.startedAt) : '',
         endedAt: this.event.endedAt ? new Date(this.event.endedAt) : '',
-        siteId: this.event.site?.id,
         activityIds: (this.event.activities || []).map(a => a.id)
       };
     }

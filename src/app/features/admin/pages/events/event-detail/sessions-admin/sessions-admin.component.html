@@ -8,7 +8,6 @@
       </mat-select>
     </mat-form-field>
     <button class="mt-2" mat-stroked-button color="primary" (click)="add.emit(newSessionActivityId)" [disabled]="!newSessionActivityId || !canEdit">Ajouter une session</button>
-    <button class="mt-2" mat-raised-button color="primary" (click)="validateAllPresent.emit()" [disabled]="!canAddPlayers">Valider tous présents</button>
   </div>
   <div class="rounded-lg border">
     <table class="w-full text-sm">
@@ -19,10 +18,11 @@
           <th class="p-3">Fin</th>
           <th class="p-3">Statut</th>
           <th class="p-3">Actions</th>
+          <th class="p-3">Groupes</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let s of sessions" class="border-t">
+        <tr *ngFor="let s of sessions; let i = index" class="border-t">
           <td class="p-3">{{ s.activity.name }}</td>
           <td class="p-3">
             <input type="time" class="border rounded px-2 py-1" [ngModel]="timeFromDate(s.startedAt)" (ngModelChange)="startTimeChange.emit({ id: s.id, hhmm: $event })" [disabled]="!canEdit" />
@@ -32,9 +32,23 @@
           </td>
           <td class="p-3">{{ s.status }}</td>
           <td class="p-3 flex gap-2">
-            <button mat-button color="primary" (click)="changeStatus.emit({ id: s.id, status: GameSessionStatus.Active })" [disabled]="!canEdit">Démarrer</button>
-            <button mat-button color="primary" (click)="changeStatus.emit({ id: s.id, status: GameSessionStatus.Completed })" [disabled]="!canEdit">Terminer</button>
+            <button mat-button color="primary"
+              (click)="changeStatus.emit({ id: s.id, status: GameSessionStatus.Active })"
+              [disabled]="!canEdit || !canStart(i)">Démarrer</button>
+            <button mat-button color="primary"
+              (click)="changeStatus.emit({ id: s.id, status: GameSessionStatus.Completed })"
+              [disabled]="!canEdit || s.status !== GameSessionStatus.Active">Terminer</button>
             <button mat-button color="warn" (click)="remove.emit(s.id)" [disabled]="!canEdit">Supprimer</button>
+          </td>
+          <td class="p-3">
+              <app-generate-groups-button
+              [gameSessionId]="s.id"
+              [isFirstOfActivity]="i === 0"
+              [disabled]="!canGenerateFor(i, s)">
+              </app-generate-groups-button>
+              <!-- <button mat-raised-button color="primary" >
+                Voir
+              </button> -->            
           </td>
         </tr>
       </tbody>

@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Administrator, JwtResponse } from '../../../models';
+import { Administrator, JwtResponse, Site } from '../../../models';
 import { CreateAdministratorRequest } from '../services/request-models/administrator.model';
 
 export const loginGod = createAction(
@@ -52,5 +52,35 @@ export const updateSubscriptionFailure = createAction('[God] Update Subscription
 export const deleteSubscription = createAction('[God] Delete Subscription', props<{ id: string }>());
 export const deleteSubscriptionSuccess = createAction('[God] Delete Subscription Success', props<{ id: string }>());
 export const deleteSubscriptionFailure = createAction('[God] Delete Subscription Failure', props<{ error: string }>());
+
+// Sites Actions
+export const loadSites = createAction(
+  '[God] Load Sites'
+);
+
+export const loadSitesSuccess = createAction(
+  '[God] Load Sites Success',
+  props<{ sites: Site[] }>()
+);
+
+export const loadSitesFailure = createAction(
+  '[God] Load Sites Failure',
+  props<{ error: string }>()
+);
+
+export const createSite = createAction(
+  '[God] Create Site',
+  props<{ site: Omit<Site, 'id' | 'createdAt' | 'administrators' | 'activities'> }>()
+);
+
+export const createSiteSuccess = createAction(
+  '[God] Create Site Success',
+  props<{ site: Site }>()
+);
+
+export const createSiteFailure = createAction(
+  '[God] Create Site Failure',
+  props<{ error: string }>()
+);
 
 

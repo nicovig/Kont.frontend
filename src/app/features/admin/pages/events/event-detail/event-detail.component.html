@@ -1,5 +1,5 @@
 <div class="p-6">
-  <div class="mx-auto max-w-3xl">
+  <div>
     <div class="rounded-lg bg-white shadow p-6" *ngIf="event">
       <h2 class="text-2xl font-semibold mb-4">{{ event.name }}</h2>
       <div class="space-y-2 text-gray-700">
@@ -19,15 +19,6 @@
           <span class="font-medium">Activités:</span> {{ event.activities.length || 0 }}
         </div>
       </div>
-      <div class="mt-4">
-        <ng-container *ngIf="sessions && sessions.length as n">
-          <app-generate-groups-button
-            [gameSessionId]="selectedSessionId()"
-            [isFirstOfActivity]="isFirstSessionOfActivity()"
-            [disabled]="!canGenerateGroups()"
-          ></app-generate-groups-button>
-        </ng-container>
-      </div>
       <app-sessions-admin
         [event]="event"
         [sessions]="sessions"
@@ -38,16 +29,15 @@
         (endTimeChange)="onEndTimeChange($event)"
         (changeStatus)="onChangeStatus($event)"
         (remove)="onRemoveSession($event)"
-        (validateAllPresent)="onValidateAllPresent()"
       ></app-sessions-admin>
       
       <app-player-registrations
-        [eventId]="event?.id || ''"
-        *ngIf="event?.id"
+        *ngIf="event?.id !== undefined"
+        [eventId]="event.id || ''"
       ></app-player-registrations>
       <div class="mt-6 flex gap-2">
         <button mat-raised-button color="primary" (click)="onEdit(event)" [disabled]="!canEdit()">Modifier</button>
-        <button mat-raised-button color="accent" (click)="onSendQRCode()" [disabled]="!event?.pools?.length">
+        <button mat-raised-button color="accent" (click)="onSendQRCode()" [disabled]="!event.pools.length || event.pools.length === 0">
           📧 Envoyer QR Codes
         </button>
         <button mat-button (click)="onBack()">Retour à la liste</button>

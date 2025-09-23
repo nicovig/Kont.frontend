@@ -56,14 +56,6 @@
           </div>
           <div class="text-sm text-red-600 mt-2" *ngIf="coeffSum() !== 1">La somme des coefficients doit être égale à 1 (actuelle: {{ coeffSum() | number:'1.2-2' }}).</div>
         </div>
-        <div class="mt-6">
-          <mat-form-field appearance="fill" class="w-full">
-            <mat-label>Site</mat-label>
-            <mat-select [(ngModel)]="activityData.site" name="site" required [compareWith]="compareSite">
-              <mat-option *ngFor="let site of sites$ | async" [value]="site">{{ site.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
         <div class="mt-6 flex gap-2">
           <button mat-raised-button color="primary" (click)="onSave()" [disabled]="loading || getValidationError()">
             {{ isEditMode ? 'Modifier' : 'Créer' }}

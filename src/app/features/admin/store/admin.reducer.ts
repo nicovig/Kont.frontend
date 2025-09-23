@@ -42,29 +42,25 @@ export const adminReducer = createReducer(
   })),
 
   // Sites Reducers
-  on(AdminActions.loadSites, (state) => ({
-    ...state,
-    sitesLoading: true,
-    sitesError: null
-  })),
 
   on(AdminActions.loadSitesSuccess, (state, { sites }) => ({
     ...state,
     sites,
     sitesLoading: false,
-    sitesError: null
+    sitesError: null,
+    selectedSite: sites.length > 0 && !state.selectedSite ? sites[0] : state.selectedSite
   })),
 
-  on(AdminActions.loadSitesFailure, (state, { error }) => ({
+  on(AdminActions.selectSite, (state, { site }) => ({
     ...state,
-    sitesLoading: false,
-    sitesError: error
+    selectedSite: site
   })),
 
-  on(AdminActions.createSiteSuccess, (state, { site }) => ({
+  on(AdminActions.changeSite, (state, { site }) => ({
     ...state,
-    sites: [...state.sites, site]
+    selectedSite: site
   })),
+
 
   // Activities Reducers
   on(AdminActions.loadActivities, (state) => ({
@@ -194,6 +190,30 @@ export const adminReducer = createReducer(
   on(AdminActions.sendQRCodeToEmailList, (state) => ({
     ...state,
     // Could add loading state if needed
+  })),
+
+  // Player Registrations Reducers
+  on(AdminActions.loadPlayerRegistrations, (state) => ({
+    ...state,
+    registrationsLoading: true,
+    registrationsError: null
+  })),
+
+  on(AdminActions.loadPlayerRegistrationsSuccess, (state, { registrations }) => ({
+    ...state,
+    registrations,
+    registrationsLoading: false,
+    registrationsError: null
+  })),
+
+  on(AdminActions.loadPlayerRegistrationsFailure, (state, { error }) => ({
+    ...state,
+    registrationsLoading: false,
+    registrationsError: error
+  })),
+
+  on(AdminActions.updatePlayerPresenceSuccess, (state) => ({
+    ...state
   })),
 
   on(AdminActions.sendQRCodeToEmailListSuccess, (state, { message }) => ({

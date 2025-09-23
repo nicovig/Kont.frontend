@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, map, switchMap, exhaustMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, exhaustMap, tap, withLatestFrom, mergeMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { AdminService } from '../services/admin.service';
 import * as AdminActions from './admin.actions';
+import * as AdminSelectors from './admin.selectors';
 
 @Injectable()
 export class AdminEffects {
@@ -31,12 +32,18 @@ export class AdminEffects {
       ofType(AdminActions.validateAllPlayersPresent),
       switchMap(({ eventId, isAllPlayersPresent }) =>
         this.adminService.updateEventAllPlayersPresent(eventId, isAllPlayersPresent).pipe(
-          map(() => AdminActions.validateAllPlayersPresentSuccess()),
+          switchMap(() => [
+            AdminActions.validateAllPlayersPresentSuccess(),
+            AdminActions.loadPlayerRegistrations({ eventId })
+          ]),
           catchError(error => of(AdminActions.validateAllPlayersPresentFailure({ error: error.message })))
         )
       )
     )
   );
+
+  // After validation, reload registrations
+  // removed: handled directly in validateAllPlayersPresent$
 
   sendQRCodeToEmailList$ = createEffect(() =>
     this.actions$.pipe(
@@ -60,64 +67,76 @@ export class AdminEffects {
     )
   );
 
+  // Sites Effects
+  changeSite$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.changeSite),
+      switchMap(({ site }) => [
+        AdminActions.selectSite({ site }),
+        AdminActions.loadActivities(),
+        AdminActions.loadEvents()
+      ])
+    )
+  );
+
+  // Auto-reload data when site changes
+  autoReloadOnSiteChange$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.selectSite),
+      switchMap(({ site }) => [
+        AdminActions.loadActivities(),
+        AdminActions.loadEvents()
+      ])
+    )
+  );
+
   navigateOnLoginSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.loginAdminSuccess),
       tap(({ jwtResponse }) =>  localStorage.setItem('token', jwtResponse.token)),
       switchMap(() => this.adminService.getCurrentAdmin()),
       tap(() => this.router.navigateByUrl('/admin')),
-      map(admin => AdminActions.loadCurrentAdminSuccess({ admin })),
+      mergeMap(admin => [
+        AdminActions.loadCurrentAdminSuccess({ admin }),
+        AdminActions.loadSitesSuccess({ sites: (admin as any).sites || [] })
+      ]),
       catchError(error => of(AdminActions.loadCurrentAdminFailure({ error: error.message })))
     )
   );
 
-  // Sites Effects
-  loadSites$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.loadSites),
-      switchMap(() =>
-        this.adminService.getSites().pipe(
-          map(sites => AdminActions.loadSitesSuccess({ sites })),
-          catchError(error => of(AdminActions.loadSitesFailure({ error: error.message })))
-        )
-      )
-    )
-  );
-
-  createSite$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AdminActions.createSite),
-      switchMap(({ site }) =>
-        this.adminService.createSite(site).pipe(
-          map(createdSite => AdminActions.createSiteSuccess({ site: createdSite })),
-          catchError(error => of(AdminActions.createSiteFailure({ error: error.message })))
-        )
-      )
-    )
-  );
 
   // Activities Effects
   loadActivities$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.loadActivities),
-      switchMap(() =>
-        this.adminService.getActivities().pipe(
+      withLatestFrom(this.store.select(AdminSelectors.selectSelectedSite)),
+      switchMap(([action, selectedSite]) => {
+        if (!selectedSite) {
+          return of(AdminActions.loadActivitiesFailure({ error: 'No site selected' }));
+        }
+        return this.adminService.getActivities().pipe(
           map(activities => AdminActions.loadActivitiesSuccess({ activities })),
           catchError(error => of(AdminActions.loadActivitiesFailure({ error: error.message })))
-        )
-      )
+        );
+      })
     )
   );
 
   createActivity$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.createActivity),
-      switchMap(({ activity }) =>
-        this.adminService.createActivity(activity).pipe(
+      withLatestFrom(this.store.select(AdminSelectors.selectSelectedSite)),
+      switchMap(([{ activity }, selectedSite]) => {
+        if (!selectedSite) {
+          return of(AdminActions.createActivityFailure({ error: 'No site selected' }));
+        }
+        // Automatically add the selected site to the activity
+        const activityWithSite = { ...activity, site: selectedSite };
+        return this.adminService.createActivity(activityWithSite).pipe(
           map(createdActivity => AdminActions.createActivitySuccess({ activity: createdActivity })),
           catchError(error => of(AdminActions.createActivityFailure({ error: error.message })))
-        )
-      )
+        );
+      })
     )
   );
 
@@ -165,10 +184,42 @@ export class AdminEffects {
   loadEvents$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.loadEvents),
-      switchMap(() =>
-        this.adminService.getEvents().pipe(
+      withLatestFrom(this.store.select(AdminSelectors.selectSelectedSite)),
+      switchMap(([action, selectedSite]) => {
+        if (!selectedSite) {
+          return of(AdminActions.loadEventsFailure({ error: 'No site selected' }));
+        }
+        return this.adminService.getEvents().pipe(
           map(events => AdminActions.loadEventsSuccess({ events })),
           catchError(error => of(AdminActions.loadEventsFailure({ error: error.message })))
+        );
+      })
+    )
+  );
+
+  // Player Registrations Effects
+  loadRegistrations$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.loadPlayerRegistrations),
+      switchMap(({ eventId }) =>
+        this.adminService.getPlayerRegistrations(eventId).pipe(
+          map(registrations => AdminActions.loadPlayerRegistrationsSuccess({ registrations })),
+          catchError(error => of(AdminActions.loadPlayerRegistrationsFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  updatePresence$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.updatePlayerPresence),
+      switchMap(({ eventId, playerRegistrationId, isPresent }) =>
+        this.adminService.updateEventPlayerIsPresent(eventId, playerRegistrationId, isPresent).pipe(
+          switchMap(() => [
+            AdminActions.updatePlayerPresenceSuccess(),
+            AdminActions.loadPlayerRegistrations({ eventId })
+          ]),
+          catchError(error => of(AdminActions.updatePlayerPresenceFailure({ error: error.message })))
         )
       )
     )
@@ -177,12 +228,18 @@ export class AdminEffects {
   createEvent$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.createEvent),
-      switchMap(({ request }) =>
-        this.adminService.createEvent(request).pipe(
+      withLatestFrom(this.store.select(AdminSelectors.selectSelectedSite)),
+      switchMap(([{ request }, selectedSite]) => {
+        if (!selectedSite) {
+          return of(AdminActions.createEventFailure({ error: 'No site selected' }));
+        }
+        // Automatically add the selected site to the event
+        const eventWithSite = { ...request, site: selectedSite };
+        return this.adminService.createEvent(eventWithSite).pipe(
           map(createdEvent => AdminActions.createEventSuccess({ event: createdEvent })),
           catchError(error => of(AdminActions.createEventFailure({ error: error.message })))
-        )
-      )
+        );
+      })
     )
   );
 

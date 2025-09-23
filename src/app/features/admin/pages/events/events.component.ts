@@ -30,7 +30,6 @@ export class EventsComponent {
   private readonly router = inject(Router);
 
   events$: Observable<Event[]> = this.store.select(AdminSelectors.selectEvents);
-  sites$: Observable<Site[]> = this.store.select(AdminSelectors.selectSites);
   activities$: Observable<Activity[]> = this.store.select(AdminSelectors.selectActivities);
 
   view: 'list' | 'create' | 'detail' | 'edit' = 'list';
@@ -38,7 +37,6 @@ export class EventsComponent {
 
   ngOnInit() {
     this.store.dispatch(AdminActions.loadEvents());
-    this.store.dispatch(AdminActions.loadSites());
     this.store.dispatch(AdminActions.loadActivities());
 
     this.route.paramMap.subscribe(params => {

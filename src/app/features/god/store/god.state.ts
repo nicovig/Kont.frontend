@@ -1,4 +1,4 @@
-import { Administrator } from '../../../models';
+import { Administrator, Site } from '../../../models';
 
 export interface GodState {
   currentGod: Administrator | null;
@@ -9,6 +9,11 @@ export interface GodState {
   administrators: Administrator[];
   adminsLoading: boolean;
   adminsError: string | null;
+
+  // Sites
+  sites: Site[];
+  sitesLoading: boolean;
+  sitesError: string | null;
 
   subscriptions: import('../../../models').Subscription[];
   subsLoading: boolean;
@@ -24,6 +29,10 @@ export const initialGodState: GodState = {
   administrators: [],
   adminsLoading: false,
   adminsError: null,
+
+  sites: [],
+  sitesLoading: false,
+  sitesError: null,
 
   subscriptions: [],
   subsLoading: false,

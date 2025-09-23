@@ -39,33 +39,19 @@ export const loadCurrentAdminFailure = createAction(
 );
 
 // Sites Actions
-export const loadSites = createAction(
-  '[Admin] Load Sites'
-);
-
 export const loadSitesSuccess = createAction(
   '[Admin] Load Sites Success',
   props<{ sites: Site[] }>()
 );
 
-export const loadSitesFailure = createAction(
-  '[Admin] Load Sites Failure',
-  props<{ error: string }>()
-);
-
-export const createSite = createAction(
-  '[Admin] Create Site',
-  props<{ site: Omit<Site, 'id' | 'createdAt'> }>()
-);
-
-export const createSiteSuccess = createAction(
-  '[Admin] Create Site Success',
+export const selectSite = createAction(
+  '[Admin] Select Site',
   props<{ site: Site }>()
 );
 
-export const createSiteFailure = createAction(
-  '[Admin] Create Site Failure',
-  props<{ error: string }>()
+export const changeSite = createAction(
+  '[Admin] Change Site',
+  props<{ site: Site }>()
 );
 
 // Activities Actions
@@ -209,6 +195,36 @@ export const validateAllPlayersPresentSuccess = createAction(
 
 export const validateAllPlayersPresentFailure = createAction(
   '[Admin] Validate All Players Present Failure',
+  props<{ error: string }>()
+);
+
+// Player Registrations
+export const loadPlayerRegistrations = createAction(
+  '[Admin] Load Player Registrations',
+  props<{ eventId: string }>()
+);
+
+export const loadPlayerRegistrationsSuccess = createAction(
+  '[Admin] Load Player Registrations Success',
+  props<{ registrations: import('../../../models').PlayerRegistration[] }>()
+);
+
+export const loadPlayerRegistrationsFailure = createAction(
+  '[Admin] Load Player Registrations Failure',
+  props<{ error: string }>()
+);
+
+export const updatePlayerPresence = createAction(
+  '[Admin] Update Player Presence',
+  props<{ eventId: string; playerRegistrationId: string; isPresent: boolean }>()
+);
+
+export const updatePlayerPresenceSuccess = createAction(
+  '[Admin] Update Player Presence Success'
+);
+
+export const updatePlayerPresenceFailure = createAction(
+  '[Admin] Update Player Presence Failure',
   props<{ error: string }>()
 );
 

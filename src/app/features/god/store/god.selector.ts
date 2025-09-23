@@ -39,4 +39,20 @@ export const selectSubsError = createSelector(
   state => state.subsError
 );
 
+// Sites Selectors
+export const selectSites = createSelector(
+  selectGodState,
+  (state) => state.sites
+);
+
+export const selectSitesLoading = createSelector(
+  selectGodState,
+  (state) => state.sitesLoading
+);
+
+export const selectSitesError = createSelector(
+  selectGodState,
+  (state) => state.sitesError
+);
+
 

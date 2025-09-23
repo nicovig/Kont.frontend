@@ -11,7 +11,7 @@ export class GodService {
   private readonly http = inject(ApiHttpService);
 
   login(email: string, password: string): Observable<JwtResponse> {
-    return this.http.post<JwtResponse>(`/auth`, { email, password });
+    return this.http.post<JwtResponse>(`/god`, { email, password });
   }
 
   getSites(): Observable<Site[]> {
@@ -26,7 +26,7 @@ export class GodService {
     return this.http.put<Site>(`/sites/${site.id}`, site);
   }
 
-  createSite(site: Site): Observable<Site> {
+  createSite(site: Omit<Site, 'id' | 'createdAt' | 'administrators' | 'activities'>): Observable<Site> {
     return this.http.post<Site>(`/sites`, site);
   }
 

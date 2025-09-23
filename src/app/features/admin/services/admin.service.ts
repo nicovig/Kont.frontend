@@ -23,23 +23,6 @@ export class AdminService {
     return this.http.get<Administrator>(`/administrators/current`);
   }
 
-  // Sites
-  getSites(): Observable<Site[]> {
-    return this.http.get<Site[]>(`/sites`);
-  }
-
-  createSite(site: Omit<Site, 'id' | 'createdAt'>): Observable<Site> {
-    return this.http.post<Site>(`/sites`, site);
-  }
-
-  updateSite(site: Site): Observable<Site> {
-    return this.http.put<Site>(`/sites/${site.id}`, site);
-  }
-
-  deleteSite(siteId: string): Observable<void> {
-    return this.http.delete<void>(`/sites/${siteId}`);
-  }
-
   // Activities
   getActivities(): Observable<Activity[]> {
     return this.http.get<Activity[]>(`/activities`);
@@ -101,6 +84,10 @@ export class AdminService {
 
   getPlayerRegistrations(eventId: string): Observable<PlayerRegistrationModel[]> {
     return this.http.get<PlayerRegistrationModel[]>(`/events/${eventId}/player-registrations`);
+  }
+
+  updateEventPlayerIsPresent(eventId: string, playerRegistrationId: string, isPresent: boolean): Observable<Event> {
+    return this.http.put<Event>(`/events/${eventId}/players/${playerRegistrationId}/present?isPresent=${isPresent}`, {});
   }
 
   // Pools

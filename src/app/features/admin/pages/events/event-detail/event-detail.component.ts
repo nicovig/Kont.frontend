@@ -7,10 +7,9 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { SessionsAdminComponent } from './sessions-admin.component';
+import { SessionsAdminComponent } from './sessions-admin/sessions-admin.component';
 import { Store } from '@ngrx/store';
-import { GenerateGroupsButtonComponent } from './generate-groups-button.component';
-import { PlayerRegistrationsComponent } from './player-registrations.component';
+import { PlayerRegistrationsComponent } from './player-registration/player-registrations.component';
 import * as AdminActions from '../../../store/admin.actions';
 import { NotificationService } from '../../../../../core/services/notification.service';
 import { Event, EventStatus, GameSession, GameSessionStatus, Activity } from '../../../../../models';
@@ -19,7 +18,7 @@ import { AdminService } from '../../../services/admin.service';
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, SessionsAdminComponent, PlayerRegistrationsComponent, GenerateGroupsButtonComponent],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, SessionsAdminComponent, PlayerRegistrationsComponent],
   templateUrl: './event-detail.component.html',
 })
 export class EventDetailComponent implements OnInit, OnDestroy {
@@ -77,12 +76,12 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   }
 
   canGenerateGroups(): boolean {
-    const s = this.sessions.find(x => x.id === this.selectedSessionId());
-    if (!s) return false;
-    const poolActive = s.pool?.status === 'Active' || s.pool?.isActive === true;
-    const sessionPending = s.status === GameSessionStatus.Pending;
-    const othersClosedOrNone = this.sessions.filter(x => x.id !== s.id).every(x => x.status === GameSessionStatus.Completed || x.status === GameSessionStatus.Cancelled) || this.sessions.length === 1;
-    return poolActive && sessionPending && othersClosedOrNone;
+    if (!this.event) return false;
+    const poolStatus = (this.event.pools && this.event.pools[0]?.status) || 'Pending';
+    const eventStatus = this.event.status;
+    if (eventStatus === EventStatus.Cancelled || eventStatus === EventStatus.Completed) return false;
+    if (poolStatus === 'Cancelled' || poolStatus === 'Completed') return false;
+    return true;
   }
 
   onEdit(event: Event) {
@@ -94,11 +93,21 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   }
 
   canEdit(): boolean {
-    return this.event?.status === EventStatus.Pending;
+    if (!this.event) return false;
+    const eventStatus = this.event.status;
+    const poolStatus = (this.event.pools && this.event.pools[0]?.status) || 'Pending';
+    if (eventStatus === EventStatus.Cancelled || eventStatus === EventStatus.Completed) return false;
+    if (poolStatus === 'Cancelled' || poolStatus === 'Completed') return false;
+    return true;
   }
 
   canAddPlayers(): boolean {
-    return this.event?.pools[0]?.isAllPlayersPresent!;
+    if (!this.event) return false;
+    const eventStatus = this.event.status;
+    const poolStatus = (this.event.pools && this.event.pools[0]?.status) || 'Pending';
+    if (eventStatus === EventStatus.Cancelled || eventStatus === EventStatus.Completed) return false;
+    if (poolStatus === 'Cancelled' || poolStatus === 'Completed') return false;
+    return true;
   }
 
   statusLabel(): string {
@@ -214,11 +223,6 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     const s = this.sessions.find(k => k.id === sessionId);
     if (!s) return;
     this.deleteSession(s);
-  }
-
-  onValidateAllPresent() {
-    if (!this.event?.id) return;
-    this.store.dispatch(AdminActions.validateAllPlayersPresent({ eventId: this.event.id, isAllPlayersPresent: true }));
   }
 
   onSendQRCode() {

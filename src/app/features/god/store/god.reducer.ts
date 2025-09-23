@@ -39,7 +39,30 @@ export const godReducer = createReducer(
   on(GodActions.loadSubscriptionsFailure, (state, { error }) => ({ ...state, subsLoading: false, subsError: error })),
   on(GodActions.createSubscriptionSuccess, (state, { subscription }) => ({ ...state, subscriptions: [subscription, ...state.subscriptions] })),
   on(GodActions.updateSubscriptionSuccess, (state, { subscription }) => ({ ...state, subscriptions: state.subscriptions.map(s => s.id === subscription.id ? subscription : s) })),
-  on(GodActions.deleteSubscriptionSuccess, (state, { id }) => ({ ...state, subscriptions: state.subscriptions.filter(s => s.id !== id) }))
+  on(GodActions.deleteSubscriptionSuccess, (state, { id }) => ({ ...state, subscriptions: state.subscriptions.filter(s => s.id !== id) })),
+
+   // Sites Reducers
+   on(GodActions.loadSites, (state) => ({
+    ...state,
+    sitesLoading: true,
+    sitesError: null
+  })),
+
+  on(GodActions.loadSitesSuccess, (state, { sites }) => ({
+    ...state,
+    sites,
+    sitesLoading: false,
+    sitesError: null
+  })),
+
+  on(GodActions.loadSitesFailure, (state, { error }) => ({
+    ...state,
+    sitesLoading: false,
+    sitesError: error
+  })),
+
+  on(GodActions.createSiteSuccess, (state, { site }) => ({
+    ...state,
+    sites: [...state.sites, site]
+  })),
 );
-
-

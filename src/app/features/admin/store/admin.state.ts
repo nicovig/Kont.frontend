@@ -11,6 +11,7 @@ export interface AdminState {
   sites: Site[];
   sitesLoading: boolean;
   sitesError: string | null;
+  selectedSite: Site | null;
 
   // Activities
   activities: Activity[];
@@ -30,6 +31,11 @@ export interface AdminState {
   poolsError: string | null;
   selectedPool: Pool | null;
   poolStats: PoolStats | null;
+
+  // Player registrations
+  registrations: PlayerRegistration[];
+  registrationsLoading: boolean;
+  registrationsError: string | null;
 
   // Dashboard
   dashboardStats: DashboardStats | null;
@@ -76,6 +82,7 @@ export const initialAdminState: AdminState = {
   sites: [],
   sitesLoading: false,
   sitesError: null,
+  selectedSite: null,
 
   activities: [],
   activitiesLoading: false,
@@ -92,6 +99,10 @@ export const initialAdminState: AdminState = {
   poolsError: null,
   selectedPool: null,
   poolStats: null,
+
+  registrations: [],
+  registrationsLoading: false,
+  registrationsError: null,
 
   dashboardStats: null,
   dashboardLoading: false,

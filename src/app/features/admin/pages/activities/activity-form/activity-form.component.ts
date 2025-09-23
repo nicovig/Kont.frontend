@@ -33,13 +33,8 @@ export class ActivityFormComponent implements OnInit {
 
   activityData: Partial<Activity> = {};
   scoringMetrics: CreateScoringMetricRequest[] = [];
-  sites$: Observable<Site[]>;
   loading = false;
   error: string | null = null;
-
-  constructor() {
-    this.sites$ = this.store.select(AdminSelectors.selectSites);
-  }
 
   ngOnInit(): void {
     if (this.isEditMode && this.activity) {

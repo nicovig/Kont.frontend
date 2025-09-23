@@ -1,0 +1,30 @@
+<div class="site-selector-container">
+  <mat-form-field appearance="outline" class="site-selector-field">
+    <mat-label>Site</mat-label>
+    <mat-select 
+      [value]="selectedSite$ | async" 
+      (selectionChange)="onSiteChange($event.value)"
+      [disabled]="(sitesLoading$ | async) || false">
+      
+      <mat-option *ngFor="let site of sites$ | async" [value]="site">
+        <div class="site-option">
+          <mat-icon class="site-icon">business</mat-icon>
+          <div class="site-info">
+            <span class="site-name">{{ site.name }}</span>
+            <span class="site-location">{{ site.city }}, {{ site.country }}</span>
+          </div>
+        </div>
+      </mat-option>
+    </mat-select>
+    
+    <mat-hint *ngIf="sitesLoading$ | async" class="loading-hint">
+      <mat-icon class="loading-icon">refresh</mat-icon>
+      Chargement des sites...
+    </mat-hint>
+    
+    <mat-error *ngIf="sitesError$ | async" class="error-hint">
+      <mat-icon class="error-icon">error</mat-icon>
+      {{ sitesError$ | async }}
+    </mat-error>
+  </mat-form-field>
+</div>

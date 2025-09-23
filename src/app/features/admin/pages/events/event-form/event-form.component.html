@@ -30,12 +30,6 @@
             <mat-datepicker-toggle matIconSuffix [for]="dpEnd"></mat-datepicker-toggle>
             <mat-datepicker #dpEnd></mat-datepicker>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="w-full md:flex-1">
-            <mat-label>Site</mat-label>
-            <mat-select [(ngModel)]="form.siteId" name="site" required>
-              <mat-option *ngFor="let s of (sites$ | async)" [value]="s.id">{{ s.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
         </div>
         <div class="mb-4">
           <mat-form-field appearance="fill" class="w-full">

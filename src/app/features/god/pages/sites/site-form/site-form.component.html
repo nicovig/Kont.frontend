@@ -3,26 +3,26 @@
   <form (submit)="$event.preventDefault()" novalidate>
     <div class="row">
       <mat-form-field appearance="fill" class="w-100">
-        <mat-label>Nom <span class="req">*</span></mat-label>
+        <mat-label>Nom</mat-label>
         <input matInput [(ngModel)]="form.name" name="name" required placeholder="Ex: Centre Paris 01" />
       </mat-form-field>
     </div>
     <div class="row">
       <mat-form-field appearance="fill" class="w-100">
-        <mat-label>Adresse <span class="req">*</span></mat-label>
+        <mat-label>Adresse</mat-label>
         <input matInput [(ngModel)]="form.address" name="address" required placeholder="12 rue de Rivoli" />
       </mat-form-field>
     </div>
     <div class="row2">
       <div>
         <mat-form-field appearance="fill" class="w-100">
-          <mat-label>Ville <span class="req">*</span></mat-label>
+          <mat-label>Ville</mat-label>
           <input matInput [(ngModel)]="form.city" name="city" required placeholder="Paris" />
         </mat-form-field>
       </div>
       <div>
         <mat-form-field appearance="fill" class="w-100">
-          <mat-label>Code postal <span class="req">*</span></mat-label>
+          <mat-label>Code postal</mat-label>
           <input matInput [(ngModel)]="form.zipCode" name="zipCode" required placeholder="75001" />
         </mat-form-field>
       </div>
@@ -30,13 +30,13 @@
     <div class="row2">
       <div>
         <mat-form-field appearance="fill" class="w-100">
-          <mat-label>Pays <span class="req">*</span></mat-label>
+          <mat-label>Pays</mat-label>
           <input matInput [(ngModel)]="form.country" name="country" required placeholder="France" />
         </mat-form-field>
       </div>
       <div>
         <mat-form-field appearance="fill" class="w-100">
-          <mat-label>État/Dept <span class="req">*</span></mat-label>
+          <mat-label>État/Dept</mat-label>
           <input matInput [(ngModel)]="form.state" name="state" required placeholder="IDF" />
         </mat-form-field>
       </div>
@@ -44,13 +44,13 @@
     <div class="row2">
       <div>
         <mat-form-field appearance="fill" class="w-100">
-          <mat-label>Téléphone <span class="req">*</span></mat-label>
+          <mat-label>Téléphone</mat-label>
           <input matInput [(ngModel)]="form.phoneNumber" name="phoneNumber" required placeholder="01 02 03 04 05" />
         </mat-form-field>
       </div>
       <div>
         <mat-form-field appearance="fill" class="w-100">
-          <mat-label>Email <span class="req">*</span></mat-label>
+          <mat-label>Email</mat-label>
           <input matInput [(ngModel)]="form.email" name="email" required placeholder="contact@exemple.com" />
         </mat-form-field>
       </div>

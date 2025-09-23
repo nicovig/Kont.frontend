@@ -41,6 +41,21 @@ export const selectSitesError = createSelector(
   (state) => state.sitesError
 );
 
+export const selectSelectedSite = createSelector(
+  selectAdminState,
+  (state) => state.selectedSite
+);
+
+export const selectRegistrations = createSelector(
+  selectAdminState,
+  (state) => state.registrations
+);
+
+export const selectRegistrationsLoading = createSelector(
+  selectAdminState,
+  (state) => state.registrationsLoading
+);
+
 // Activities Selectors
 export const selectActivities = createSelector(
   selectAdminState,
@@ -174,13 +189,11 @@ export const selectLastUpdate = createSelector(
 // Combined Selectors
 export const selectAdminOverview = createSelector(
   selectCurrentAdmin,
-  selectSites,
   selectActivities,
   selectPools,
   selectDashboardStats,
-  (admin, sites, activities, pools, dashboardStats) => ({
+  (admin, activities, pools, dashboardStats) => ({
     admin,
-    sitesCount: sites.length,
     activitiesCount: activities.length,
     poolsCount: pools.length,
     activePoolsCount: pools.filter(p => p.status === 'Active').length,
@@ -202,14 +215,12 @@ export const selectPoolOverview = createSelector(
 // Error Selectors
 export const selectAllErrors = createSelector(
   selectAuthError,
-  selectSitesError,
   selectActivitiesError,
   selectEventsError,
   selectPoolsError,
   selectDashboardError,
-  (authError, sitesError, activitiesError, eventsError, poolsError, dashboardError) => ({
+  (authError, activitiesError, eventsError, poolsError, dashboardError) => ({
     authError,
-    sitesError,
     activitiesError,
     eventsError,
     poolsError,
@@ -220,14 +231,12 @@ export const selectAllErrors = createSelector(
 // Loading Selectors
 export const selectAllLoading = createSelector(
   selectAuthLoading,
-  selectSitesLoading,
   selectActivitiesLoading,
   selectEventsLoading,
   selectPoolsLoading,
   selectDashboardLoading,
-  (authLoading, sitesLoading, activitiesLoading, eventsLoading, poolsLoading, dashboardLoading) => ({
+  (authLoading, activitiesLoading, eventsLoading, poolsLoading, dashboardLoading) => ({
     authLoading,
-    sitesLoading,
     activitiesLoading,
     eventsLoading,
     poolsLoading,
