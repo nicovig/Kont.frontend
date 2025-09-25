@@ -4,6 +4,9 @@ import { RouterModule, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
 import * as AdminActions from '../store/admin.actions';
+import * as AdminSelectors from '../store/admin.selectors';
+import { Observable } from 'rxjs';
+import { Site } from '../../../models';
 
 @Component({
   selector: 'app-admin-shell',
@@ -15,6 +18,7 @@ import * as AdminActions from '../store/admin.actions';
 export class AdminShellComponent {
   private readonly router = inject(Router);
   private readonly store = inject(Store);
+  selectedSite$: Observable<Site | null> = this.store.select(AdminSelectors.selectSelectedSite);
 
   logout() {
     // Supprimer les données de session

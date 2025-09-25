@@ -35,8 +35,14 @@ export class ActivityFormComponent implements OnInit {
   scoringMetrics: CreateScoringMetricRequest[] = [];
   loading = false;
   error: string | null = null;
+  selectedSite$ = this.store.select(AdminSelectors.selectSelectedSite);
 
   ngOnInit(): void {
+    this.selectedSite$.subscribe(site => {
+      if (!this.isEditMode && site && !this.activityData.site) {
+        this.activityData.site = site;
+      }
+    });
     if (this.isEditMode && this.activity) {
       this.activityData = { ...this.activity };
       this.scoringMetrics = (this.activity.scoringMetrics || []).map(sm => ({

@@ -11,6 +11,12 @@
         </div>
         <div class="mb-4">
           <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Site</mat-label>
+            <input matInput [ngModel]="(selectedSite$ | async)?.name" name="site" disabled />
+          </mat-form-field>
+        </div>
+        <div class="mb-4">
+          <mat-form-field appearance="fill" class="w-full">
             <mat-label>Lien</mat-label>
             <input matInput [(ngModel)]="form.eventLink" (ngModelChange)="onLinkChange($event)" name="eventLink" required />
           </mat-form-field>

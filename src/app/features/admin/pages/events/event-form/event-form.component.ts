@@ -25,6 +25,7 @@ export class EventFormComponent {
   private readonly store = inject(Store);
 
   activities$: Observable<Activity[]> = this.store.select(AdminSelectors.selectActivities);
+  selectedSite$ = this.store.select(AdminSelectors.selectSelectedSite);
 
   @Input() event: Event | null = null;
   @Input() isEditMode = false;
@@ -71,7 +72,7 @@ export class EventFormComponent {
         eventLink: this.form.eventLink,
         startedAt: this.form.startedAt,
         endedAt: this.form.endedAt,
-        siteId: this.form.siteId,
+        siteId: this.form.siteId || (undefined as any),
         activityIds: this.form.activityIds || []
       };
       this.store.dispatch(AdminActions.createEvent({ request: req }));

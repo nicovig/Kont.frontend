@@ -70,11 +70,7 @@ export class AdminService {
     return this.http.put<Event>(`/events/${event.id}`, event);
   }
 
-  updateEventStatus(eventId: string, eventStatus: string): Observable<Event> {
-    return this.http.put<Event>(`/events/${eventId}/status`, eventStatus, {
-      headers: { 'Content-Type': 'text/plain' }
-    });
-  }
+  
 
   deleteEvent(eventId: string): Observable<void> {
     return this.http.delete<void>(`/events/${eventId}`);

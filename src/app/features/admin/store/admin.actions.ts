@@ -334,3 +334,79 @@ export const generateGroupsForGameSessionFailure = createAction(
   '[Admin] Generate Groups For GameSession Failure',
   props<{ error: string }>()
 );
+
+// Game Sessions Actions
+export const createGameSessionForEvent = createAction(
+  '[Admin] Create GameSession For Event',
+  props<{ eventId: string; activityId: string }>()
+);
+
+export const createGameSessionForEventSuccess = createAction(
+  '[Admin] Create GameSession For Event Success',
+  props<{ gameSession: import('../../../models').GameSession }>()
+);
+
+export const createGameSessionForEventFailure = createAction(
+  '[Admin] Create GameSession For Event Failure',
+  props<{ error: string }>()
+);
+
+export const updateGameSessionStatus = createAction(
+  '[Admin] Update GameSession Status',
+  props<{ sessionId: string; status: 'Pending' | 'Active' | 'Completed' | 'Cancelled' }>()
+);
+
+export const updateGameSessionStatusSuccess = createAction(
+  '[Admin] Update GameSession Status Success',
+  props<{ gameSession: import('../../../models').GameSession }>()
+);
+
+export const updateGameSessionStatusFailure = createAction(
+  '[Admin] Update GameSession Status Failure',
+  props<{ error: string }>()
+);
+
+export const updateGameSessionStartTime = createAction(
+  '[Admin] Update GameSession Start Time',
+  props<{ sessionId: string; startedAt: Date }>()
+);
+
+export const updateGameSessionStartTimeSuccess = createAction(
+  '[Admin] Update GameSession Start Time Success',
+  props<{ gameSession: import('../../../models').GameSession }>()
+);
+
+export const updateGameSessionStartTimeFailure = createAction(
+  '[Admin] Update GameSession Start Time Failure',
+  props<{ error: string }>()
+);
+
+export const updateGameSessionEndTime = createAction(
+  '[Admin] Update GameSession End Time',
+  props<{ sessionId: string; endedAt: Date }>()
+);
+
+export const updateGameSessionEndTimeSuccess = createAction(
+  '[Admin] Update GameSession End Time Success',
+  props<{ gameSession: import('../../../models').GameSession }>()
+);
+
+export const updateGameSessionEndTimeFailure = createAction(
+  '[Admin] Update GameSession End Time Failure',
+  props<{ error: string }>()
+);
+
+export const deleteGameSession = createAction(
+  '[Admin] Delete GameSession',
+  props<{ sessionId: string }>()
+);
+
+export const deleteGameSessionSuccess = createAction(
+  '[Admin] Delete GameSession Success',
+  props<{ sessionId: string }>()
+);
+
+export const deleteGameSessionFailure = createAction(
+  '[Admin] Delete GameSession Failure',
+  props<{ error: string }>()
+);

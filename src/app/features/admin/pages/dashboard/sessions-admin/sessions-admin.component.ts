@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { Event, GameSession, GameSessionStatus } from '../../../../../../models';
+import { Event, GameSession, GameSessionStatus } from '../../../../../models';
 import { GenerateGroupsButtonComponent } from '../generate-groups-button/generate-groups-button.component';
 
 @Component({
@@ -28,6 +28,12 @@ export class SessionsAdminComponent {
 
   newSessionActivityId = '';
   GameSessionStatus = GameSessionStatus;
+
+  onAddClick() {
+    if (!this.newSessionActivityId) return;
+    this.add.emit(this.newSessionActivityId);
+    this.newSessionActivityId = '';
+  }
 
   timeFromDate(d?: Date | string): string {
     if (!d) return '';

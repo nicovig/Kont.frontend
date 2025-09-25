@@ -276,12 +276,27 @@ export class AdminEffects {
   updateEventStatus$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.updateEventStatus),
-      switchMap(({ eventId, status }) =>
-        this.adminService.updateEventStatus(eventId, status).pipe(
+      withLatestFrom(this.store.select(AdminSelectors.selectEvents)),
+      switchMap(([{ eventId, status }, events]) => {
+        const found = (events || []).find(e => e.id === eventId);
+        if (!found) {
+          return of(AdminActions.updateEventStatusFailure({ error: 'Event not found' }));
+        }
+        const req = {
+          id: found.id,
+          name: found.name,
+          eventLink: found.eventLink,
+          startedAt: found.startedAt as unknown as Date,
+          endedAt: found.endedAt as unknown as Date,
+          siteId: found.site.id,
+          activityIds: (found.activities || []).map(a => a.id),
+          status
+        } as any;
+        return this.adminService.updateEvent(req).pipe(
           map(event => AdminActions.updateEventStatusSuccess({ event })),
           catchError(error => of(AdminActions.updateEventStatusFailure({ error: error.message })))
-        )
-      )
+        );
+      })
     )
   );
 
@@ -292,6 +307,67 @@ export class AdminEffects {
         this.adminService.deleteEvent(eventId).pipe(
           map(() => AdminActions.deleteEventSuccess({ eventId })),
           catchError(error => of(AdminActions.deleteEventFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  // Game Sessions Effects
+  createGameSessionForEvent$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.createGameSessionForEvent),
+      switchMap(({ eventId, activityId }) =>
+        this.adminService.createGameSessionForEvent(eventId, activityId).pipe(
+          map(gameSession => AdminActions.createGameSessionForEventSuccess({ gameSession })),
+          catchError(error => of(AdminActions.createGameSessionForEventFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  updateGameSessionStatus$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.updateGameSessionStatus),
+      switchMap(({ sessionId, status }) =>
+        this.adminService.updateGameSessionStatus(sessionId, status).pipe(
+          map(gameSession => AdminActions.updateGameSessionStatusSuccess({ gameSession })),
+          catchError(error => of(AdminActions.updateGameSessionStatusFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  updateGameSessionStartTime$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.updateGameSessionStartTime),
+      switchMap(({ sessionId, startedAt }) =>
+        this.adminService.updateGameSessionStartTime(sessionId, startedAt).pipe(
+          map(gameSession => AdminActions.updateGameSessionStartTimeSuccess({ gameSession })),
+          catchError(error => of(AdminActions.updateGameSessionStartTimeFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  updateGameSessionEndTime$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.updateGameSessionEndTime),
+      switchMap(({ sessionId, endedAt }) =>
+        this.adminService.updateGameSessionEndTime(sessionId, endedAt).pipe(
+          map(gameSession => AdminActions.updateGameSessionEndTimeSuccess({ gameSession })),
+          catchError(error => of(AdminActions.updateGameSessionEndTimeFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  deleteGameSession$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.deleteGameSession),
+      switchMap(({ sessionId }) =>
+        this.adminService.deleteGameSession(sessionId).pipe(
+          map(() => AdminActions.deleteGameSessionSuccess({ sessionId })),
+          catchError(error => of(AdminActions.deleteGameSessionFailure({ error: error.message })))
         )
       )
     )

@@ -7,7 +7,7 @@
         <mat-option *ngFor="let a of event?.activities" [value]="a.id">{{ a.name }}</mat-option>
       </mat-select>
     </mat-form-field>
-    <button class="mt-2" mat-stroked-button color="primary" (click)="add.emit(newSessionActivityId)" [disabled]="!newSessionActivityId || !canEdit">Ajouter une session</button>
+    <button class="mt-2" mat-stroked-button color="primary" (click)="onAddClick()" [disabled]="!newSessionActivityId || !canEdit">Ajouter une session</button>
   </div>
   <div class="rounded-lg border">
     <table class="w-full text-sm">
@@ -34,7 +34,7 @@
           <td class="p-3 flex gap-2">
             <button mat-button color="primary"
               (click)="changeStatus.emit({ id: s.id, status: GameSessionStatus.Active })"
-              [disabled]="!canEdit || !canStart(i)">Démarrer</button>
+              [disabled]="!canEdit || !canStart(i)">Démarrer la session</button>
             <button mat-button color="primary"
               (click)="changeStatus.emit({ id: s.id, status: GameSessionStatus.Completed })"
               [disabled]="!canEdit || s.status !== GameSessionStatus.Active">Terminer</button>

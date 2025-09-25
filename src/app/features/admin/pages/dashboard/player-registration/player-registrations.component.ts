@@ -10,9 +10,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { EventStatus, PlayerRegistration } from '../../../../../../models';
-import * as AdminActions from '../../../../store/admin.actions';
-import * as AdminSelectors from '../../../../store/admin.selectors';
+import { EventStatus, PlayerRegistration } from '../../../../../models';
+import * as AdminActions from '../../../store/admin.actions';
+import * as AdminSelectors from '../../../store/admin.selectors';
 
 @Component({
   selector: 'app-player-registrations',

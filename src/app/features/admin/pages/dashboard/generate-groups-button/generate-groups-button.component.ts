@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
-import * as AdminActions from '../../../../store/admin.actions';
+import * as AdminActions from '../../../store/admin.actions';
 
 @Component({
   selector: 'app-generate-groups-button',
