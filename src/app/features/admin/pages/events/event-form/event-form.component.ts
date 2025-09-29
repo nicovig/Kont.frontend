@@ -48,21 +48,22 @@ export class EventFormComponent {
     }
   }
 
-  getValidationError(): string | null {
-    if (!this.form.name || !this.form.eventLink || !this.form.siteId || !this.form.startedAt || !this.form.endedAt) {
-      return 'Nom, lien, dates et site sont requis.';
+  isDisable(): boolean {
+    if (!this.form.name || !this.form.eventLink || !this.form.startedAt || !this.form.endedAt) {
+      this.error = 'Nom, lien et dates sont requis.';
+      return true;
     }
     const start = new Date(this.form.startedAt);
-    const end = new Date(this.form.endedAt);
+    const end = new Date(this.form.endedAt);  
     if (start && end && end < start) {
-      return 'La date de fin ne peut pas être antérieure à la date de début.';
+      this.error = 'La date de fin ne peut pas être antérieure à la date de début.';
+      return true;
     }
-    return null;
+    this.error = null;
+    return false;
   }
 
   save() {
-    const err = this.getValidationError();
-    if (err) { this.error = err; return; }
     this.error = null;
     if (this.isEditMode) {
       this.store.dispatch(AdminActions.updateEvent({ request: this.form as UpdateEventRequest }));
@@ -72,7 +73,6 @@ export class EventFormComponent {
         eventLink: this.form.eventLink,
         startedAt: this.form.startedAt,
         endedAt: this.form.endedAt,
-        siteId: this.form.siteId || (undefined as any),
         activityIds: this.form.activityIds || []
       };
       this.store.dispatch(AdminActions.createEvent({ request: req }));

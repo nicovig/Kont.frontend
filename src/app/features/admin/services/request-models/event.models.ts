@@ -3,7 +3,6 @@ export interface CreateEventRequest {
   eventLink: string;
   startedAt: string | Date;
   endedAt: string | Date;
-  siteId: string;
   activityIds: string[];
   status?: 'Pending' | 'Active' | 'Completed' | 'Cancelled';
 }

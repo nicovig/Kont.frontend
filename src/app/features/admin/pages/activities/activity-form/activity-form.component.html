@@ -11,6 +11,12 @@
         </div>
         <div class="mb-4">
           <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Site</mat-label>
+            <input matInput [ngModel]="(selectedSite$ | async)?.name" name="site" disabled />
+          </mat-form-field>
+        </div>
+        <div class="mb-4">
+          <mat-form-field appearance="fill" class="w-full">
             <mat-label>Description</mat-label>
             <textarea matInput [(ngModel)]="activityData.description" name="description" rows="3" required></textarea>
           </mat-form-field>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,7 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Observable } from 'rxjs';
+import { Subject, takeUntil, combineLatest } from 'rxjs';
 import { Activity, Site } from '../../../../../models';
 import { AdminState } from '../../../store/admin.state';
 import * as AdminActions from '../../../store/admin.actions';
@@ -22,9 +22,10 @@ import { CreateActivityRequest, UpdateActivityRequest, CreateScoringMetricReques
   imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatSlideToggleModule, MatIconModule, MatSnackBarModule],
   templateUrl: './activity-form.component.html',
 })
-export class ActivityFormComponent implements OnInit {
+export class ActivityFormComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store<{ admin: AdminState }>);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly destroy$ = new Subject<void>();
 
   @Input() activity: Activity | null = null;
   @Input() isEditMode = false;
@@ -38,11 +39,6 @@ export class ActivityFormComponent implements OnInit {
   selectedSite$ = this.store.select(AdminSelectors.selectSelectedSite);
 
   ngOnInit(): void {
-    this.selectedSite$.subscribe(site => {
-      if (!this.isEditMode && site && !this.activityData.site) {
-        this.activityData.site = site;
-      }
-    });
     if (this.isEditMode && this.activity) {
       this.activityData = { ...this.activity };
       this.scoringMetrics = (this.activity.scoringMetrics || []).map(sm => ({
@@ -52,11 +48,11 @@ export class ActivityFormComponent implements OnInit {
         coefficient: sm.coefficient,
       }));
     } else {
-      this.activityData = {
+      this.activityData = { 
         name: '',
         description: '',
         playersPerGroupLimit: 2
-      };
+       };
       this.scoringMetrics = [{ name: '', unit: '', higherIsBetter: true, coefficient: 1 }];
     }
   }
@@ -85,24 +81,30 @@ export class ActivityFormComponent implements OnInit {
     }
 
     // Écouter le succès/échec
-    this.store.select(AdminSelectors.selectActivitiesLoading).subscribe(loading => {
+    combineLatest([
+      this.store.select(AdminSelectors.selectActivitiesLoading),
+      this.store.select(AdminSelectors.selectActivitiesError)
+    ]).pipe(takeUntil(this.destroy$)).subscribe(([loading, error]) => {
       if (!loading) {
-        this.store.select(AdminSelectors.selectActivitiesError).subscribe(error => {
-          if (error) {
-            this.error = error;
-            this.loading = false;
+        if (error) {
+          this.error = error;
+          this.loading = false;
+        } else {
+          const name = this.activityData.name || 'Activité';
+          if (!this.isEditMode) {
+            this.snackBar.open(`${name} a bien été créé`, 'OK', { duration: 3000 });
           } else {
-            const name = this.activityData.name || 'Activité';
-            if (!this.isEditMode) {
-              this.snackBar.open(`${name} a bien été créé`, 'OK', { duration: 3000 });
-            } else {
-              this.snackBar.open(`${name} a bien été modifié`, 'OK', { duration: 3000 });
-            }
-            this.formSubmitted.emit();
+            this.snackBar.open(`${name} a bien été modifié`, 'OK', { duration: 3000 });
           }
-        });
+          this.formSubmitted.emit();
+        }
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onCancel() {
@@ -152,8 +154,8 @@ export class ActivityFormComponent implements OnInit {
   }
 
   getValidationError(): string | null {
-    if (!this.activityData.name || !this.activityData.site || !this.activityData.description) {
-      return 'Nom, site, métrique et description sont requis.';
+    if (!this.activityData.name || !this.activityData.description) {
+      return 'Nom, métrique et description sont requis.';
     }
     const limit = Number(this.activityData.playersPerGroupLimit);
     if (!Number.isFinite(limit) || limit <= 0 || !Number.isInteger(limit)) {

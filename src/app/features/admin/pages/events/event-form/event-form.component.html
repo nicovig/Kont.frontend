@@ -46,10 +46,10 @@
           </mat-form-field>
         </div>
         <div class="mt-6 flex gap-2">
-          <button mat-raised-button color="primary" (click)="save()" [disabled]="getValidationError()">{{ isEditMode ? 'Modifier' : 'Créer' }}</button>
+          <button mat-raised-button color="primary" (click)="save()" [disabled]="isDisable()">{{ isEditMode ? 'Modifier' : 'Créer' }}</button>
           <button mat-button (click)="cancel()">Annuler</button>
         </div>
-        <div class="text-sm text-red-600 mt-2" *ngIf="error">{{ error }}</div>
+        <div *ngIf="error !== null || error !== undefined && error !== ''" class="text-sm text-red-600 mt-2" >{{ error }}</div>
       </form>
     </div>
   </div>

@@ -1,50 +1,37 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { NotificationService } from '../../../../../core/services/notification.service';
-import { Event, EventStatus, GameSession, GameSessionStatus, Activity, PoolStatus } from '../../../../../models';
+import { Event, EventStatus, GameSession, GameSessionStatus, Activity } from '../../../../../models';
 import { AdminService } from '../../../services/admin.service';
+import * as AdminActions from '../../../store/admin.actions';
 
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, MatInputModule],
   templateUrl: './event-detail.component.html',
 })
-export class EventDetailComponent implements OnInit, OnDestroy {
+export class EventDetailComponent {
 
   @Input() event: Event | null = null;
   @Output() editRequested = new EventEmitter<Event>();
   @Output() backToList = new EventEmitter<void>();
   activities$!: Observable<Activity[]>;
-  private destroy$ = new Subject<void>();
   EventStatus = EventStatus;
+  emailsText: string = '';
 
   constructor(
     private readonly adminService: AdminService, 
     private readonly store: Store,
-    private readonly dialog: MatDialog,
-    private readonly notificationService: NotificationService
   ) {
     this.activities$ = this.adminService.getActivities();
   }
-
-  ngOnInit(): void {
-    // Rely on @Input() updates from parent; no manual subscriptions here
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  ngOnChanges() {}
 
   isDisabledStartEvent(): unknown {
     if (!this.event) return true;
@@ -69,7 +56,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   canEdit(): boolean {
     if (!this.event) return false;
     const eventStatus = this.event.status;
-    const poolStatus = (this.event.pools && this.event.pools[0]?.status) || 'Pending';
+    const poolStatus = this.event.pools?.[0]?.status ?? 'Pending';
     if (eventStatus === EventStatus.Cancelled || eventStatus === EventStatus.Completed) return false;
     if (poolStatus === 'Cancelled' || poolStatus === 'Completed') return false;
     return true;
@@ -83,7 +70,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
       case EventStatus.Active: return 'En cours';
       case EventStatus.Completed: return 'Terminé';
       case EventStatus.Cancelled: return 'Annulé';
-      default: return this.event?.status || '';
+      default: return this.event?.status ?? '';
     }
   }
 
@@ -115,12 +102,6 @@ export class EventDetailComponent implements OnInit, OnDestroy {
 
   onAddSession(activityId: string) {}
 
-  setSessionStatus(s: GameSession, status: 'Pending' | 'Active' | 'Completed' | 'Cancelled') {}
-
-  onChangeStatus(ev: { id: string; status: GameSessionStatus }) {}
-
-  deleteSession(s: GameSession) {}
-
   timeFromDate(d?: Date | string): string {
     if (!d) return '';
     const dt = new Date(d);
@@ -129,17 +110,19 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     return `${hh}:${mm}`;
   }
 
-  updateSessionTime(s: GameSession, hhmm: string) {}
-
   onStartTimeChange(ev: { id: string; hhmm: string }) {}
-
-  updateSessionEndTime(s: GameSession, hhmm: string) {}
-
   onEndTimeChange(ev: { id: string; hhmm: string }) {}
-
   onRemoveSession(sessionId: string) {}
 
-  onSendQRCode() {}
+  onSendQRCode() {
+    if (!this.event || !this.emailsText?.trim()) return;
+    const emails = this.emailsText
+      .split(',')
+      .map(e => e.trim())
+      .filter(e => !!e);
+    if (emails.length === 0) return;
+    this.store.dispatch(AdminActions.sendQRCodeToEmailList({ eventId: this.event.id, emails }));
+  }
 
   onStartEvent() {}
 }

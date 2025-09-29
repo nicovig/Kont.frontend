@@ -42,9 +42,6 @@ export class AdminEffects {
     )
   );
 
-  // After validation, reload registrations
-  // removed: handled directly in validateAllPlayersPresent$
-
   sendQRCodeToEmailList$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.sendQRCodeToEmailList),
@@ -130,7 +127,6 @@ export class AdminEffects {
         if (!selectedSite) {
           return of(AdminActions.createActivityFailure({ error: 'No site selected' }));
         }
-        // Automatically add the selected site to the activity
         const activityWithSite = { ...activity, site: selectedSite };
         return this.adminService.createActivity(activityWithSite).pipe(
           map(createdActivity => AdminActions.createActivitySuccess({ activity: createdActivity })),
@@ -143,12 +139,17 @@ export class AdminEffects {
   updateActivity$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.updateActivity),
-      switchMap(({ activity }) =>
-        this.adminService.updateActivity(activity).pipe(
+      withLatestFrom(this.store.select(AdminSelectors.selectSelectedSite)),
+      switchMap(([{ activity }, selectedSite]) => {
+        if (!selectedSite) {
+          return of(AdminActions.updateActivityFailure({ error: 'No site selected' }));
+        }
+        const activityWithSite = { ...activity, site: selectedSite };
+        return this.adminService.updateActivity(activityWithSite).pipe(
           map(updatedActivity => AdminActions.updateActivitySuccess({ activity: updatedActivity })),
           catchError(error => of(AdminActions.updateActivityFailure({ error: error.message })))
-        )
-      )
+        );
+      })
     )
   );
 
@@ -252,7 +253,7 @@ export class AdminEffects {
           return of(AdminActions.createEventFailure({ error: 'No site selected' }));
         }
         // Automatically add the selected site to the event
-        const eventWithSite = { ...request, site: selectedSite };
+        const eventWithSite = { ...request, siteId: selectedSite.id };
         return this.adminService.createEvent(eventWithSite).pipe(
           map(createdEvent => AdminActions.createEventSuccess({ event: createdEvent })),
           catchError(error => of(AdminActions.createEventFailure({ error: error.message })))

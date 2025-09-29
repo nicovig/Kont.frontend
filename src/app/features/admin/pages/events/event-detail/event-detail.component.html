@@ -24,6 +24,14 @@
         <button mat-raised-button color="primary" (click)="onEdit(event)" [disabled]="event.status !== EventStatus.Pending">Modifier</button>
         <button mat-button (click)="onBack()">Retour à la liste</button>
       </div>
+      <div class="mt-6 space-y-3">
+        <div class="text-gray-800 font-medium">Envoyer les QR codes par email</div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Emails (séparés par des virgules)</mat-label>
+          <textarea matInput rows="3" [(ngModel)]="emailsText" placeholder="ex: alice@mail.com, bob@mail.com"></textarea>
+        </mat-form-field>
+        <button mat-raised-button color="accent" (click)="onSendQRCode()" [disabled]="!emailsText.trim()">Envoyer</button>
+      </div>
     </div>
   </div>
 </div>

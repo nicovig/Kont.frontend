@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -14,14 +14,14 @@ import { Activity } from '../../../../../models';
   imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule],
   templateUrl: './activities-list.component.html',
 })
-export class ActivitiesListComponent {
+export class ActivitiesListComponent implements OnChanges {
   @Input() activities: Activity[] = [];
   @Input() loading = false;
   @Input() error: string | null = null;
   @Output() delete = new EventEmitter<string>();
   @Output() open = new EventEmitter<string>();
 
-  displayedColumns: string[] = ['name', 'description', 'site', 'metrics', 'actions'];
+  displayedColumns: string[] = ['name', 'description', 'metrics', 'actions'];
   dataSource = new MatTableDataSource<Activity>([]);
 
   ngOnChanges() {
@@ -34,7 +34,13 @@ export class ActivitiesListComponent {
     }
   }
 
-  getScoringMetricsCount(activity: Activity): number {
-    return activity.scoringMetrics?.length || 0;
+  getScoringMetricsDisplay(activity: Activity): string {
+    if (!activity.scoringMetrics || activity.scoringMetrics.length === 0) {
+      return 'Aucune métrique';
+    }
+    
+    return activity.scoringMetrics
+      .map(metric => `${metric.name}/${metric.unit || 'N/A'} (${metric.coefficient})`)
+      .join(' - ');
   }
 }
