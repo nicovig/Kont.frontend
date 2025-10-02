@@ -3,7 +3,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { COMMA, ENTER, SEMICOLON, SPACE } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Validators, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -14,7 +19,7 @@ import * as AdminActions from '../../../store/admin.actions';
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, MatInputModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatChipsModule, MatIconModule],
   templateUrl: './event-detail.component.html',
 })
 export class EventDetailComponent {
@@ -24,7 +29,9 @@ export class EventDetailComponent {
   @Output() backToList = new EventEmitter<void>();
   activities$!: Observable<Activity[]>;
   EventStatus = EventStatus;
-  emailsText: string = '';
+  emails: string[] = [];
+  readonly separatorKeysCodes = [ENTER, COMMA, SEMICOLON, SPACE] as const;
+  emailCtrl = new FormControl<string>('', { nonNullable: true, validators: [Validators.email] });
 
   constructor(
     private readonly adminService: AdminService, 
@@ -114,14 +121,30 @@ export class EventDetailComponent {
   onEndTimeChange(ev: { id: string; hhmm: string }) {}
   onRemoveSession(sessionId: string) {}
 
+  addEmail(event: MatChipInputEvent) {
+    const value = (event.value || '').trim();
+    this.emailCtrl.setValue(value);
+    this.emailCtrl.markAsDirty();
+    if (value && this.isValidEmail(value)) {
+      if (!this.emails.includes(value)) this.emails.push(value);
+      event.chipInput?.clear();
+      this.emailCtrl.reset('');
+      return;
+    }
+  }
+
+  removeEmail(email: string) {
+    const idx = this.emails.indexOf(email);
+    if (idx >= 0) this.emails.splice(idx, 1);
+  }
+
   onSendQRCode() {
-    if (!this.event || !this.emailsText?.trim()) return;
-    const emails = this.emailsText
-      .split(',')
-      .map(e => e.trim())
-      .filter(e => !!e);
-    if (emails.length === 0) return;
-    this.store.dispatch(AdminActions.sendQRCodeToEmailList({ eventId: this.event.id, emails }));
+    if (!this.event || this.emails.length === 0) return;
+    this.store.dispatch(AdminActions.sendQRCodeToEmailList({ eventId: this.event.id, emails: this.emails }));
+  }
+
+  private isValidEmail(v: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   }
 
   onStartEvent() {}
