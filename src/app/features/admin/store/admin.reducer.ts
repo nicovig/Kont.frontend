@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { AdminState, initialAdminState } from './admin.state';
+import { initialAdminState } from './admin.state';
 import * as AdminActions from './admin.actions';
 
 export const adminReducer = createReducer(
@@ -147,6 +147,12 @@ export const adminReducer = createReducer(
     selectedEvent: state.selectedEvent?.id === eventId ? null : state.selectedEvent
   })),
 
+  on(AdminActions.endEventSuccess, (state, { event }) => ({
+    ...state,
+    events: state.events.map(e => e.id === event.id ? event : e),
+    selectedEvent: state.selectedEvent?.id === event.id ? event : state.selectedEvent
+  })),
+
   on(AdminActions.selectEvent, (state, { event }) => ({
     ...state,
     selectedEvent: event
@@ -230,5 +236,45 @@ export const adminReducer = createReducer(
   on(AdminActions.sendQRCodeToEmailListFailure, (state, { error }) => ({
     ...state,
     // Handle error if needed
+  })),
+
+  // Game Session Groups Reducers
+  on(AdminActions.loadGameSessionGroups, (state, { sessionId }) => ({
+    ...state,
+    sessionGroupsLoading: { ...state.sessionGroupsLoading, [sessionId]: true },
+    sessionGroupsError: { ...state.sessionGroupsError, [sessionId]: null }
+  })),
+
+  on(AdminActions.loadGameSessionGroupsSuccess, (state, { sessionId, groups }) => ({
+    ...state,
+    sessionGroups: { ...state.sessionGroups, [sessionId]: groups },
+    sessionGroupsLoading: { ...state.sessionGroupsLoading, [sessionId]: false },
+    sessionGroupsError: { ...state.sessionGroupsError, [sessionId]: null }
+  })),
+
+  on(AdminActions.loadGameSessionGroupsFailure, (state, { sessionId, error }) => ({
+    ...state,
+    sessionGroupsLoading: { ...state.sessionGroupsLoading, [sessionId]: false },
+    sessionGroupsError: { ...state.sessionGroupsError, [sessionId]: error }
+  })),
+
+  // Session Scores Reducers
+  on(AdminActions.loadGameSessionScores, (state, { sessionId }) => ({
+    ...state,
+    sessionScoresLoading: { ...state.sessionScoresLoading, [sessionId]: true },
+    sessionScoresError: { ...state.sessionScoresError, [sessionId]: null }
+  })),
+
+  on(AdminActions.loadGameSessionScoresSuccess, (state, { sessionId, scores }) => ({
+    ...state,
+    sessionScores: { ...state.sessionScores, [sessionId]: scores },
+    sessionScoresLoading: { ...state.sessionScoresLoading, [sessionId]: false },
+    sessionScoresError: { ...state.sessionScoresError, [sessionId]: null }
+  })),
+
+  on(AdminActions.loadGameSessionScoresFailure, (state, { sessionId, error }) => ({
+    ...state,
+    sessionScoresLoading: { ...state.sessionScoresLoading, [sessionId]: false },
+    sessionScoresError: { ...state.sessionScoresError, [sessionId]: error }
   })),
 );

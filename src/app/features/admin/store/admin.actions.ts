@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { DashboardStats, RecentActivity } from './admin.state';
-import { Site, Activity, Event, JwtResponse, Administrator, PlayerGroup, EventStatus } from '../../../models';
+import { Site, Activity, Event, JwtResponse, Administrator, PlayerGroup } from '../../../models';
 import { CreateActivityRequest, UpdateActivityRequest } from '../services/request-models/activity.models';
 import { CreateEventRequest, UpdateEventRequest } from '../services/request-models/event.models';
 
@@ -181,6 +181,22 @@ export const updateEventStatusSuccess = createAction(
 
 export const updateEventStatusFailure = createAction(
   '[Admin] Update Event Status Failure',
+  props<{ error: string }>()
+);
+
+// End Event
+export const endEvent = createAction(
+  '[Admin] End Event',
+  props<{ eventId: string }>()
+);
+
+export const endEventSuccess = createAction(
+  '[Admin] End Event Success',
+  props<{ event: Event }>()
+);
+
+export const endEventFailure = createAction(
+  '[Admin] End Event Failure',
   props<{ error: string }>()
 );
 
@@ -409,4 +425,57 @@ export const deleteGameSessionSuccess = createAction(
 export const deleteGameSessionFailure = createAction(
   '[Admin] Delete GameSession Failure',
   props<{ error: string }>()
+);
+
+// Game Session Groups
+export const openGameSessionGroupsDialog = createAction(
+  '[Admin] Open Game Session Groups Dialog',
+  props<{ sessionId: string }>()
+);
+
+export const loadGameSessionGroups = createAction(
+  '[Admin] Load Game Session Groups',
+  props<{ sessionId: string }>()
+);
+
+export const loadGameSessionGroupsSuccess = createAction(
+  '[Admin] Load Game Session Groups Success',
+  props<{ sessionId: string; groups: PlayerGroup[] }>()
+);
+
+export const loadGameSessionGroupsFailure = createAction(
+  '[Admin] Load Game Session Groups Failure',
+  props<{ sessionId: string; error: string }>()
+);
+
+// Drag & Drop move player between groups
+export const movePlayerToGroup = createAction(
+  '[Admin] Move Player To Group',
+  props<{ poolId: string; playerId: string; newGroupId: string; sessionId: string }>()
+);
+
+export const movePlayerToGroupSuccess = createAction(
+  '[Admin] Move Player To Group Success',
+  props<{ sessionId: string }>()
+);
+
+export const movePlayerToGroupFailure = createAction(
+  '[Admin] Move Player To Group Failure',
+  props<{ sessionId: string; error: string }>()
+);
+
+// Session Scores
+export const loadGameSessionScores = createAction(
+  '[Admin] Load Game Session Scores',
+  props<{ sessionId: string }>()
+);
+
+export const loadGameSessionScoresSuccess = createAction(
+  '[Admin] Load Game Session Scores Success',
+  props<{ sessionId: string; scores: any[] }>()
+);
+
+export const loadGameSessionScoresFailure = createAction(
+  '[Admin] Load Game Session Scores Failure',
+  props<{ sessionId: string; error: string }>()
 );

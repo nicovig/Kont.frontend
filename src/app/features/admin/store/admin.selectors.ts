@@ -201,6 +201,38 @@ export const selectAdminOverview = createSelector(
   })
 );
 
+// Game Session Groups Selectors
+export const selectSessionGroups = (sessionId: string) => createSelector(
+  selectAdminState,
+  (state) => state.sessionGroups[sessionId] || []
+);
+
+export const selectSessionGroupsLoading = (sessionId: string) => createSelector(
+  selectAdminState,
+  (state) => !!state.sessionGroupsLoading[sessionId]
+);
+
+export const selectSessionGroupsError = (sessionId: string) => createSelector(
+  selectAdminState,
+  (state) => state.sessionGroupsError[sessionId] || null
+);
+
+// Session Scores Selectors
+export const selectSessionScores = (sessionId: string) => createSelector(
+  selectAdminState,
+  (state) => state.sessionScores[sessionId] || []
+);
+
+export const selectSessionScoresLoading = (sessionId: string) => createSelector(
+  selectAdminState,
+  (state) => !!state.sessionScoresLoading[sessionId]
+);
+
+export const selectSessionScoresError = (sessionId: string) => createSelector(
+  selectAdminState,
+  (state) => state.sessionScoresError[sessionId] || null
+);
+
 export const selectPoolOverview = createSelector(
   selectSelectedPool,
   selectPoolStats,

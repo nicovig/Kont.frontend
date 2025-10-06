@@ -42,13 +42,15 @@
           </td>
           <td class="p-3">
               <app-generate-groups-button
+              *ngIf="!s.playerGroups || s.playerGroups.length === 0"
               [gameSessionId]="s.id"
               [isFirstOfActivity]="i === 0"
               [disabled]="!canGenerateFor(i, s)">
               </app-generate-groups-button>
-              <!-- <button mat-raised-button color="primary" >
+              <button *ngIf="s.playerGroups && s.playerGroups.length > 0"
+                mat-raised-button color="primary" (click)="openGroups(s.id)">
                 Voir
-              </button> -->            
+              </button>            
           </td>
         </tr>
       </tbody>

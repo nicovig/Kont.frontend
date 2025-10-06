@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator, PlayerGroup, EventStatus } from '../../../models';
+import { Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGlobalScore, ActivitySummaryData, JwtResponse, Administrator, PlayerGroup } from '../../../models';
 import { PlayerRegistration as PlayerRegistrationModel } from '../../../models/player-registration.model';
 import { CreateEventRequest, UpdateEventRequest } from './request-models/event.models';
 import { PoolStats, DashboardStats, RecentActivity } from '../store/admin.state';
@@ -74,6 +74,10 @@ export class AdminService {
 
   deleteEvent(eventId: string): Observable<void> {
     return this.http.delete<void>(`/events/${eventId}`);
+  }
+
+  endEvent(eventId: string): Observable<Event> {
+    return this.http.post<Event>(`/events/${eventId}/end`, {});
   }
 
   updateEventAllPlayersPresent(eventId: string, isAllPlayersPresent: boolean): Observable<void> {
@@ -189,6 +193,22 @@ export class AdminService {
 
   updateGameSessionEndTime(sessionId: string, endedAt: Date): Observable<GameSession> {
     return this.http.put<GameSession>(`/gamesessions/${sessionId}/end-time`, { id: sessionId, endedAt });
+  }
+
+  getGameSessionGroups(sessionId: string): Observable<PlayerGroup[]> {
+    return this.http.get<any[]>(`/gamesessions/${sessionId}/groups`).pipe(
+      map(groups => (groups || []).map(g => ({
+        id: g.id,
+        gameSession: g.gameSession,
+        players: (g.players || []).map((pr: any) => pr.player),
+        groupNumber: g.groupNumber,
+        createdAt: g.createdAt
+      }) as PlayerGroup))
+    );
+  }
+
+  getGameSessionScores(sessionId: string): Observable<any[]> {
+    return this.http.get<any[]>(`/gamesessions/${sessionId}/scores`);
   }
 
   // Activity Summary

@@ -23,6 +23,10 @@
 
             <div class="mb-3">
               <button mat-stroked-button color="primary" (click)="onStartEvent(ev)" [disabled]="!canStartEvent(ev)">Démarrer l'évènement</button>
+              <button class="ml-2" mat-stroked-button color="warn" (click)="onEndEvent(ev)" [disabled]="ev.status !== 'Active'">Clôturer l'évènement</button>
+            </div>
+            <div class="mb-3">
+              
             </div>
 
             <app-sessions-admin

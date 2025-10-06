@@ -1,4 +1,4 @@
-import { Administrator, Site, Activity, Pool, Event, PlayerRegistration, GameSession, PlayerGroup, PlayerGlobalScore, ActivitySummaryData } from '../../../models';
+import { Administrator, Site, Activity, Pool, Event, PlayerRegistration, PlayerGroup } from '../../../models';
 
 export interface AdminState {
   // Auth
@@ -45,6 +45,14 @@ export interface AdminState {
   // Real-time updates
   realTimeEnabled: boolean;
   lastUpdate: Date | null;
+
+  // Game session groups cache
+  sessionGroups: Record<string, PlayerGroup[]>;
+  sessionGroupsLoading: Record<string, boolean>;
+  sessionGroupsError: Record<string, string | null>;
+  sessionScores: Record<string, any[]>;
+  sessionScoresLoading: Record<string, boolean>;
+  sessionScoresError: Record<string, string | null>;
 }
 
 export interface PoolStats {
@@ -109,5 +117,12 @@ export const initialAdminState: AdminState = {
   dashboardError: null,
 
   realTimeEnabled: false,
-  lastUpdate: null
+  lastUpdate: null,
+
+  sessionGroups: {},
+  sessionGroupsLoading: {},
+  sessionGroupsError: {},
+  sessionScores: {},
+  sessionScoresLoading: {},
+  sessionScoresError: {}
 };

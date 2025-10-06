@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Store } from '@ngrx/store';
+import * as AdminActions from '../../../store/admin.actions';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,6 +30,8 @@ export class SessionsAdminComponent {
 
   newSessionActivityId = '';
   GameSessionStatus = GameSessionStatus;
+
+  constructor(private store: Store) {}
 
   onAddClick() {
     if (!this.newSessionActivityId) return;
@@ -69,6 +73,10 @@ export class SessionsAdminComponent {
     if (this.hasActiveSession()) return false;
     if (session.status !== GameSessionStatus.Pending) return false;
     return this.isPreviousClosed(index);
+  }
+
+  openGroups(sessionId: string) {
+    this.store.dispatch(AdminActions.openGameSessionGroupsDialog({ sessionId }));
   }
 }
 

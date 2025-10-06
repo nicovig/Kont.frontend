@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
-import * as AdminActions from '../store/admin.actions';
-import * as AdminSelectors from '../store/admin.selectors';
+import * as AdminActions from '../../store/admin.actions';
+import * as AdminSelectors from '../../store/admin.selectors';
 import { Observable } from 'rxjs';
-import { Site } from '../../../models';
+import { Site } from '../../../../models';
 
 @Component({
   selector: 'app-admin-shell',

@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
 import { AdminService } from '../services/admin.service';
 import * as AdminActions from './admin.actions';
 import * as AdminSelectors from './admin.selectors';
+import { MatDialog } from '@angular/material/dialog';
+import { GroupsDialogComponent } from '../layout/groups-dialog/groups-dialog.component';
 
 @Injectable()
 export class AdminEffects {
@@ -14,6 +16,7 @@ export class AdminEffects {
   private readonly adminService = inject(AdminService);
   private readonly store = inject(Store);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   // Auth Effects
   loginAdmin$ = createEffect(() =>
@@ -68,11 +71,18 @@ export class AdminEffects {
   changeSite$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.changeSite),
-      switchMap(({ site }) => [
-        AdminActions.selectSite({ site }),
-        AdminActions.loadActivities(),
-        AdminActions.loadEvents()
-      ])
+      switchMap(({ site }) =>
+        this.adminService.getCurrentAdmin().pipe(
+          switchMap(admin => [
+            AdminActions.loadCurrentAdminSuccess({ admin }),
+            AdminActions.selectSite({ site }),
+            AdminActions.loadActivities(),
+            AdminActions.loadEvents(),
+            AdminActions.loadDashboardStats()
+          ]),
+          catchError(error => of(AdminActions.loadCurrentAdminFailure({ error: error.message })))
+        )
+      )
     )
   );
 
@@ -313,6 +323,21 @@ export class AdminEffects {
     )
   );
 
+  endEvent$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.endEvent),
+      switchMap(({ eventId }) =>
+        this.adminService.endEvent(eventId).pipe(
+          switchMap(event => [
+            AdminActions.endEventSuccess({ event }),
+            AdminActions.loadEvents()
+          ]),
+          catchError(error => of(AdminActions.endEventFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
   // Game Sessions Effects
   createGameSessionForEvent$ = createEffect(() =>
     this.actions$.pipe(
@@ -369,6 +394,64 @@ export class AdminEffects {
         this.adminService.deleteGameSession(sessionId).pipe(
           map(() => AdminActions.deleteGameSessionSuccess({ sessionId })),
           catchError(error => of(AdminActions.deleteGameSessionFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+  // Load groups for a session
+  loadGameSessionGroups$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.loadGameSessionGroups),
+      switchMap(({ sessionId }) =>
+        this.adminService.getGameSessionGroups(sessionId).pipe(
+          map(groups => AdminActions.loadGameSessionGroupsSuccess({ sessionId, groups })),
+          catchError(error => of(AdminActions.loadGameSessionGroupsFailure({ sessionId, error: error.message })))
+        )
+      )
+    )
+  );
+
+  // Open dialog and ensure groups are loaded
+  openGameSessionGroupsDialog$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.openGameSessionGroupsDialog),
+      withLatestFrom(this.store.select(AdminSelectors.selectSelectedEvent)),
+      tap(([{ sessionId }]) => {
+        this.dialog.open(GroupsDialogComponent, {
+          width: '800px',
+          data: { sessionId }
+        });
+      }),
+      switchMap(([{ sessionId }]) => [
+        AdminActions.loadGameSessionGroups({ sessionId }),
+        AdminActions.loadGameSessionScores({ sessionId })
+      ])
+    )
+  );
+
+  loadGameSessionScores$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.loadGameSessionScores),
+      switchMap(({ sessionId }) =>
+        this.adminService.getGameSessionScores(sessionId).pipe(
+          map(scores => AdminActions.loadGameSessionScoresSuccess({ sessionId, scores })),
+          catchError(error => of(AdminActions.loadGameSessionScoresFailure({ sessionId, error: error.message })))
+        )
+      )
+    )
+  );
+
+  movePlayerToGroup$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.movePlayerToGroup),
+      switchMap(({ poolId, playerId, newGroupId, sessionId }) =>
+        this.adminService.updatePlayerGroup(poolId, playerId, newGroupId).pipe(
+          switchMap(() => [
+            AdminActions.movePlayerToGroupSuccess({ sessionId }),
+            AdminActions.loadGameSessionGroups({ sessionId })
+          ]),
+          catchError(error => of(AdminActions.movePlayerToGroupFailure({ sessionId, error: error.message })))
         )
       )
     )

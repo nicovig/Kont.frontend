@@ -180,4 +180,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.store.dispatch(AdminActions.loadEvents());
     this.loadSessionsForEvent(ev.id);
   }
+
+  onEndEvent(ev: Event) {
+    this.store.dispatch(AdminActions.endEvent({ eventId: ev.id }));
+    this.store.dispatch(AdminActions.loadEvents());
+    this.loadSessionsForEvent(ev.id);
+  }
 }

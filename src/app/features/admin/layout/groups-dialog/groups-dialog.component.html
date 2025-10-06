@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>Groupes</h2>
+<div mat-dialog-content>
+  <ng-container *ngIf="groups$ | async as groups; else loadingTpl">
+    <div *ngIf="groups.length === 0; else groupsTpl">Aucun groupe pour cette session.</div>
+    <ng-template #groupsTpl>
+      <div class="groups" cdkDropListGroup>
+        <div class="group" *ngFor="let g of groups" [cdkDropListData]="g" cdkDropList (cdkDropListDropped)="drop($event, g)">
+          <h3>Groupe {{ g.groupNumber }}</h3>
+          <ul>
+            <li *ngFor="let p of g.players" cdkDrag [cdkDragData]="{ player: p, group: g }">{{ p?.username }}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="scores" *ngIf="(scores$ | async) as scores">
+        <h3 class="mt-4">Scores</h3>
+        <div *ngIf="scores.length === 0">Aucun score disponible.</div>
+        <table *ngIf="scores.length > 0">
+          <thead>
+            <tr>
+              <th>Joueur</th>
+              <th>Score</th>
+              <th>%</th>
+              <th>Rang</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of scores">
+              <td>{{ s.username || s.playerName }}</td>
+              <td>{{ s.globalScore }}</td>
+              <td>{{ s.globalPercentage }}%</td>
+              <td>{{ s.globalRank }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-template>
+  </ng-container>
+  <ng-template #loadingTpl>
+    Chargement...
+  </ng-template>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="close()">Fermer</button>
+</div>
