@@ -15,6 +15,7 @@ import { Store } from '@ngrx/store';
 import { Event, EventStatus, GameSession, GameSessionStatus, Activity } from '../../../../../models';
 import { AdminService } from '../../../services/admin.service';
 import * as AdminActions from '../../../store/admin.actions';
+import { toFrenchStatusLabel } from '../../../../../shared/status.mapper';
 
 @Component({
   selector: 'app-event-detail',
@@ -71,15 +72,7 @@ export class EventDetailComponent {
 
   canAddPlayers(): boolean { return false; }
 
-  statusLabel(): string {
-    switch (this.event?.status) {
-      case EventStatus.Pending: return 'Prévu';
-      case EventStatus.Active: return 'En cours';
-      case EventStatus.Completed: return 'Terminé';
-      case EventStatus.Cancelled: return 'Annulé';
-      default: return this.event?.status ?? '';
-    }
-  }
+  statusLabel(): string { return this.event ? toFrenchStatusLabel(this.event.status as unknown as string) : ''; }
 
   statusClass(): string {
     if (this.event?.status === EventStatus.Pending) return 'text-blue-600';
@@ -89,15 +82,7 @@ export class EventDetailComponent {
     return 'text-gray-700';
   }
 
-  sessionStatusLabel(s: GameSession): string {
-    switch (s.status) {
-      case GameSessionStatus.Pending: return 'En attente';
-      case GameSessionStatus.Active: return 'En cours';
-      case GameSessionStatus.Completed: return 'Terminé';
-      case GameSessionStatus.Cancelled: return 'Annulé';
-      default: return s.status as unknown as string;
-    }
-  }
+  sessionStatusLabel(s: GameSession): string { return toFrenchStatusLabel(s.status as unknown as string); }
 
   sessionStatusClass(s: GameSession): string {
     if (s.status === GameSessionStatus.Pending) return 'text-blue-600';
@@ -146,8 +131,6 @@ export class EventDetailComponent {
   private isValidEmail(v: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   }
-
-  onStartEvent() {}
 }
 
 

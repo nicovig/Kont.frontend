@@ -1,0 +1,39 @@
+<section class="player-container">
+  <header class="player-header">
+    <img class="brand-logo" src="/assets/logo.png" alt="Kont" />
+  </header>
+
+  <div class="error-banner" *ngIf="error$ | async as error">
+    {{ error }}
+  </div>
+
+  <div class="event-card">
+    <ng-container *ngIf="loading$ | async; else content">
+      <div class="skeleton skeleton-title"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line"></div>
+    </ng-container>
+    <ng-template #content>
+      <ng-container *ngIf="event$ | async as event">
+        <div class="event-field">
+          <span class="label">Event</span>
+          <span class="value">{{ event?.name }}</span>
+        </div>
+        <div class="event-field">
+          <span class="label">Date</span>
+          <span class="value">{{ event?.date | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="event-field">
+          <span class="label">Status</span>
+          <span class="value">{{ event?.statusLabel }}</span>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+
+  <div class="actions">
+    <button class="join-btn" type="button">Join</button>
+  </div>
+</section>
+
+

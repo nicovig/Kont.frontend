@@ -12,6 +12,7 @@ import { MAT_DATE_LOCALE, MatNativeDateModule, provideNativeDateAdapter } from '
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Administrator, Event, EventStatus, SubscriptionType } from '../../../../../models';
+import { toFrenchStatusLabel } from '../../../../../shared/status.mapper';
 import * as AdminSelectors from '../../../store/admin.selectors';
 
 @Component({
@@ -79,15 +80,7 @@ export class EventsListComponent {
     return true;
   }
 
-  statusLabel(e: Event): string {
-    switch (e.status) {
-      case EventStatus.Pending: return 'Prévu';
-      case EventStatus.Active: return 'En cours';
-      case EventStatus.Completed: return 'Terminé';
-      case EventStatus.Cancelled: return 'Annulé';
-      default: return e.status || '';
-    }
-  }
+  statusLabel(e: Event): string { return toFrenchStatusLabel(e.status || ''); }
 
   statusClass(e: Event): string {
     if (e.status === EventStatus.Pending) return 'text-blue-600';

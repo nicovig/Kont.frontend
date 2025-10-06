@@ -9,6 +9,7 @@ import { AdminState, DashboardStats, RecentActivity } from '../../store/admin.st
 import * as AdminActions from '../../store/admin.actions';
 import * as AdminSelectors from '../../store/admin.selectors';
 import { Event, EventStatus, GameSession } from '../../../../models';
+import { toFrenchStatusLabel } from '../../../../shared/status.mapper';
 import { SessionsAdminComponent } from './sessions-admin/sessions-admin.component';
 import { AdminService } from '../../services/admin.service';
 
@@ -80,15 +81,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   trackByEventId(index: number, ev: Event) { return ev.id; }
 
-  statusLabel(ev: Event): string {
-    switch (ev.status) {
-      case EventStatus.Pending: return 'Prévu';
-      case EventStatus.Active: return 'En cours';
-      case EventStatus.Completed: return 'Terminé';
-      case EventStatus.Cancelled: return 'Annulé';
-      default: return ev.status as unknown as string;
-    }
-  }
+  statusLabel(ev: Event): string { return toFrenchStatusLabel(ev.status as unknown as string); }
 
   statusClass(ev: Event): string {
     if (ev.status === EventStatus.Pending) return 'text-blue-600';

@@ -7,6 +7,10 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'event',
+    loadChildren: () => import('./features/player/player.routes').then(m => m.routes)
+  },
+  {
     path: 'god',
     loadChildren: () => import('./features/god/god.routes').then(m => m.routes)
   },
