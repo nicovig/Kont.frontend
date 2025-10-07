@@ -13,7 +13,7 @@ export class PlayerEffects {
   loadEventInfo$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PlayerActions.loadEventInfo),
-      switchMap(({ eventLink }) => this.service.getEventInfo(eventLink)),
+      switchMap(({ eventId }) => this.service.getEventInfo(eventId)),
       map(event => PlayerActions.loadEventInfoSuccess({ event })),
       catchError(err => of(PlayerActions.loadEventInfoFailure({ error: err?.message || 'Une erreur est survenue' })))
     )

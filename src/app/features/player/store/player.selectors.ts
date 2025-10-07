@@ -1,6 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { PlayerState } from './player.state';
-import { toFrenchStatusLabel } from '../../../shared/status.mapper';
 
 export const selectPlayerState = createFeatureSelector<PlayerState>('player');
 
@@ -12,8 +11,9 @@ export const selectPlayerEventInfoView = createSelector(selectPlayerEventInfo, (
   if (!e) return null;
   return {
     name: e.name,
-    date: e.date,
-    statusLabel: toFrenchStatusLabel(e.status)
+    startDate: e.startDate,
+    endDate: e.endDate,
+    location: e.location
   };
 });
 

@@ -1,7 +1,8 @@
 export interface PlayerEventInfo {
   name: string;
-  date: string;
-  status: string;
+  startDate: string;
+  endDate: string;
+  location: string;
 }
 
 export interface PlayerState {
