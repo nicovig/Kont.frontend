@@ -40,6 +40,8 @@
   </div>
 
   <div class="mt-auto pb-8 flex justify-center">
-    <button class="bg-white text-[color:var(--brand-color)] rounded-lg px-8 py-4 font-extrabold text-lg active:translate-y-px" type="button">Je participe</button>
+    <a [routerLink]="['/event', eventId, poolId, 'register']">
+      <button class="bg-white text-[color:var(--brand-color)] rounded-lg px-8 py-4 font-extrabold text-lg active:translate-y-px" type="button">Je participe</button>
+    </a>
   </div>
 </section>

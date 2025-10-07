@@ -14,6 +14,16 @@ export const routes: Routes = [
       provideState('player', playerReducer),
       provideEffects(PlayerEffects)
     ]
+  },
+  {
+    path: ':eventId/:poolId/register',
+    loadComponent: () => import('./register/register.component').then(m => m.PlayerRegisterComponent),
+    data: { mobileFirst: true }
+  },
+  {
+    path: ':eventId/:poolId/dashboard',
+    loadComponent: () => import('./register/register-success.component').then(m => m.PlayerRegisterSuccessComponent),
+    data: { mobileFirst: true }
   }
 ];
 
