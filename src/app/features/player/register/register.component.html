@@ -1,5 +1,5 @@
 <section class="min-h-screen bg-[var(--brand-color)] flex flex-col max-w-md mx-auto p-6">
-  <h1 class="text-center text-white font-extrabold text-3xl mb-8">Inscription</h1>
+  <h1 class="text-center text-white font-extrabold text-3xl mb-2">Inscription</h1>
 
   <div class="bg-white/10 rounded-2xl p-5 backdrop-blur-sm border border-white/20">
     <form [formGroup]="form" (ngSubmit)="next()" *ngIf="step === 1" class="space-y-5">
@@ -14,10 +14,26 @@
       <div class="space-y-2">
         <label class="text-white/90 text-sm">Email</label>
         <input class="w-full rounded-xl p-3 bg-white text-[color:var(--brand-color)] placeholder:text-gray-400" placeholder="pierre.gasly@gmail.com" type="email" formControlName="email" />
+        <div class="text-xs mt-1" [class.text-white/70]="emailChecking" [class.text-white]="!emailChecking">
+          <ng-container *ngIf="form.get('email')?.hasError('emailTaken'); else emailHint">
+            Cet email est déjà utilisé
+          </ng-container>
+          <ng-template #emailHint>
+            <ng-container *ngIf="emailChecking">Vérification en cours…</ng-container>
+          </ng-template>
+        </div>
       </div>
       <div class="space-y-2">
         <label class="text-white/90 text-sm">Nom d'utilisateur</label>
         <input class="w-full rounded-xl p-3 bg-white text-[color:var(--brand-color)] placeholder:text-gray-400" placeholder="pierre.gasly" formControlName="username" />
+        <div class="text-xs mt-1" [class.text-white/70]="usernameChecking" [class.text-white]="!usernameChecking">
+          <ng-container *ngIf="form.get('username')?.hasError('usernameTaken'); else usernameHint">
+            Ce nom d'utilisateur est déjà pris
+          </ng-container>
+          <ng-template #usernameHint>
+            <ng-container *ngIf="usernameChecking">Vérification en cours…</ng-container>
+          </ng-template>
+        </div>
       </div>
       <div class="pt-2 flex justify-end">
         <button class="bg-white text-[color:var(--brand-color)] rounded-lg px-6 py-3 font-extrabold disabled:opacity-60" type="submit" [disabled]="form.invalid">Continuer</button>
@@ -25,17 +41,21 @@
     </form>
 
     <form [formGroup]="pinForm" (ngSubmit)="submit()" *ngIf="step === 2" class="space-y-6">
-      <div class="text-center text-white/90">Choisis un code PIN (4 chiffres)</div>
+      <div class="text-center text-white/90">Choisis un code PIN (5 chiffres)</div>
       <div class="flex gap-3 justify-center">
-        <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]" class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]" (input)="move($event, 0)" />
-        <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]" class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]" (input)="move($event, 1)" />
-        <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]" class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]" (input)="move($event, 2)" />
-        <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]" class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]" (input)="move($event, 3)" />
+        <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]" class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]" (input)="move($event, 0)" (keydown)="onKeyDown($event, 0)" />
+        <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]" class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]" (input)="move($event, 1)" (keydown)="onKeyDown($event, 1)" />
+        <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]" class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]" (input)="move($event, 2)" (keydown)="onKeyDown($event, 2)" />
+        <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]" class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]" (input)="move($event, 3)" (keydown)="onKeyDown($event, 3)" />
+        <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]" class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]" (input)="move($event, 4)" (keydown)="onKeyDown($event, 4)" />
       </div>
       <div class="pt-2 flex justify-between">
         <button class="text-white/90" type="button" (click)="step=1">Retour</button>
         <button class="bg-white text-[color:var(--brand-color)] rounded-lg px-6 py-3 font-extrabold disabled:opacity-60" type="submit" [disabled]="pinForm.invalid">Valider</button>
       </div>
     </form>
+  </div>
+  <div class="text-center mt-6">
+    <a class="text-white underline" [routerLink]="['../login']">J'ai déjà un compte</a>
   </div>
 </section>

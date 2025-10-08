@@ -20,6 +20,11 @@ export const routes: Routes = [
     loadComponent: () => import('./register/register.component').then(m => m.PlayerRegisterComponent),
     data: { mobileFirst: true }
   },
+      {
+        path: ':eventId/:poolId/login',
+        loadComponent: () => import('./register/login.component').then(m => m.PlayerLoginComponent),
+        data: { mobileFirst: true }
+      },
   {
     path: ':eventId/:poolId/dashboard',
     loadComponent: () => import('./register/register-success.component').then(m => m.PlayerRegisterSuccessComponent),
