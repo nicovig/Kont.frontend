@@ -1,0 +1,30 @@
+<section class="min-h-screen bg-white text-[color:var(--brand-color)] p-6">
+  <h1 class="text-2xl font-extrabold mb-4">Dashboard Joueur</h1>
+  
+  <div *ngIf="player$ | async as player" class="mb-6">
+    <p>Connecté en tant que: <strong>{{ player.firstname }} {{ player.lastname }}</strong></p>
+    <p>Email: {{ player.email }}</p>
+    <p>Username: {{ player.username }}</p>
+  </div>
+
+  <div *ngIf="eventId && poolId" class="mb-6 p-4 bg-gray-100 rounded-lg">
+    <h2 class="text-lg font-semibold mb-2">Évènement actuel</h2>
+    <p>Event ID: <strong>{{ eventId }}</strong></p>
+    <p>Pool ID: <strong>{{ poolId }}</strong></p>
+  </div>
+
+  <div *ngIf="!eventId || !poolId" class="mb-6 p-4 bg-blue-50 rounded-lg">
+    <h2 class="text-lg font-semibold mb-2">Mode global</h2>
+    <p>Vous êtes connecté en mode global. Vous pouvez participer à plusieurs évènements.</p>
+  </div>
+
+  <div class="mt-6 text-gray-600">
+    <h3 class="text-lg font-semibold mb-2">Fonctionnalités à implémenter:</h3>
+    <ul class="list-disc list-inside space-y-1">
+      <li>Liste des évènements disponibles</li>
+      <li>Historique des participations</li>
+      <li>Profil et paramètres</li>
+      <li>Notifications</li>
+    </ul>
+  </div>
+</section>

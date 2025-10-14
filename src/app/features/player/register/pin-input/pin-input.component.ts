@@ -5,15 +5,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   selector: 'pin-input',
   imports: [CommonModule],
-  template: `
-  <div class="flex gap-3 justify-center">
-    <ng-container *ngFor="let i of digits; let idx = index">
-      <input maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]"
-             class="w-14 h-14 rounded-xl text-center text-2xl bg-white text-[color:var(--brand-color)]"
-             (input)="onInput($event, idx)" (keydown)="onKeyDown($event, idx)" />
-    </ng-container>
-  </div>
-  `
+  templateUrl: './pin-input.component.html'
 })
 export class PinInputComponent {
   @Input() length = 5;

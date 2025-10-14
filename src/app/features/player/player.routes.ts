@@ -4,6 +4,9 @@ import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
 import { playerReducer } from './store/player.reducer';
 import { PlayerEffects } from './store/player.effects';
+import { playerAuthReducer } from './auth/store/player-auth.reducer';
+import { PlayerAuthEffects } from './auth/store/player-auth.effects';
+import { playerAuthGuard } from './auth/guards/player-auth.guard';
 
 export const routes: Routes = [
   {
@@ -22,13 +25,32 @@ export const routes: Routes = [
   },
       {
         path: ':eventId/:poolId/login',
-        loadComponent: () => import('./register/login.component').then(m => m.PlayerLoginComponent),
+        loadComponent: () => import('./login/login.component').then(m => m.PlayerLoginComponent),
         data: { mobileFirst: true }
       },
   {
     path: ':eventId/:poolId/dashboard',
-    loadComponent: () => import('./register/register-success.component').then(m => m.PlayerRegisterSuccessComponent),
+    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.PlayerDashboardComponent),
     data: { mobileFirst: true }
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./auth/login/login.component').then(m => m.PlayerAuthLoginComponent),
+    data: { mobileFirst: true },
+    providers: [
+      provideState('playerAuth', playerAuthReducer),
+      provideEffects(PlayerAuthEffects)
+    ]
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.PlayerDashboardComponent),
+    canActivate: [playerAuthGuard],
+    data: { mobileFirst: true },
+    providers: [
+      provideState('playerAuth', playerAuthReducer),
+      provideEffects(PlayerAuthEffects)
+    ]
   }
 ];
 

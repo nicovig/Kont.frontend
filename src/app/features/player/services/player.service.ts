@@ -26,6 +26,10 @@ export class PlayerService {
   checkUsername(username: string): Observable<{ available: boolean }> {
     return this.http.get<{ available: boolean }>(`/player/check-username`, { params: { username } });
   }
+
+  loginPlayer(identifier: string, pin: string): Observable<{ playerId: string }> {
+    return this.http.post<{ playerId: string }>(`/player/login`, { identifier, pin });
+  }
 }
 
 
